@@ -4,6 +4,7 @@ import java.util.Random;
 /**
  * A simple model of a rabbit.
  * Rabbits age, move, breed, and die.
+ * We will all die eventually.
  * 
  * @author David J. Barnes, Michael Kölling, Louis Mellac, Andrei Cinca
  * @version 2020.02.11
