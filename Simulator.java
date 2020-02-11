@@ -6,7 +6,7 @@ import java.awt.Color;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
- * containing rabbits and foxes.
+ * containing students and lecturers.
  * 
  * @author David J. Barnes and Michael Kölling
  * @version 2016.02.29 (2)
@@ -18,10 +18,12 @@ public class Simulator
     private static final int DEFAULT_WIDTH = 120;
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 80;
-    // The probability that a fox will be created in any given grid position.
-    private static final double FOX_CREATION_PROBABILITY = 0.02;
-    // The probability that a rabbit will be created in any given grid position.
-    private static final double RABBIT_CREATION_PROBABILITY = 0.08;    
+    // The probability that a lecturer will be created in any given grid position.
+    private static final double LECTURER_CREATION_PROBABILITY = 0.02;
+    // The probability that a student will be created in any given grid position.
+    private static final double STUDENT_CREATION_PROBABILITY = 0.08;
+    
+    private static final double ADMIN_CREATION_PROBABILITY = 0.01;
 
     // List of animals in the field.
     private List<Animal> animals;
@@ -59,8 +61,9 @@ public class Simulator
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
-        view.setColor(Rabbit.class, Color.ORANGE);
-        view.setColor(Fox.class, Color.BLUE);
+        view.setColor(Student.class, Color.ORANGE);
+        view.setColor(Lecturer.class, Color.BLUE);
+        view.setColor(Admin.class, Color.GREEN);
         
         // Setup a valid starting point.
         reset();
@@ -91,7 +94,7 @@ public class Simulator
     /**
      * Run the simulation from its current state for a single step.
      * Iterate over the whole field updating the state of each
-     * fox and rabbit.
+     * lecturer and student.
      */
     public void simulateOneStep()
     {
@@ -99,7 +102,7 @@ public class Simulator
 
         // Provide space for newborn animals.
         List<Animal> newAnimals = new ArrayList<>();        
-        // Let all rabbits act.
+        // Let all students act.
         for(Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
             Animal animal = it.next();
             animal.act(newAnimals);
@@ -108,7 +111,7 @@ public class Simulator
             }
         }
                
-        // Add the newly born foxes and rabbits to the main lists.
+        // Add the newly born lectureres and students to the main lists.
         animals.addAll(newAnimals);
 
         view.showStatus(step, field);
@@ -128,7 +131,7 @@ public class Simulator
     }
     
     /**
-     * Randomly populate the field with foxes and rabbits.
+     * Randomly populate the field with lectureres and students.
      */
     private void populate()
     {
@@ -136,15 +139,20 @@ public class Simulator
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                if(rand.nextDouble() <= FOX_CREATION_PROBABILITY) {
+                if(rand.nextDouble() <= LECTURER_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Fox fox = new Fox(true, field, location);
-                    animals.add(fox);
+                    Lecturer lecturer = new Lecturer(true, field, location);
+                    animals.add(lecturer);
                 }
-                else if(rand.nextDouble() <= RABBIT_CREATION_PROBABILITY) {
+                else if(rand.nextDouble() <= STUDENT_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Rabbit rabbit = new Rabbit(true, field, location);
-                    animals.add(rabbit);
+                    Student student = new Student(true, field, location);
+                    animals.add(student);
+                }
+                else if(rand.nextDouble() <= ADMIN_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Admin admin = new Admin(true, field, location);
+                    animals.add(admin);
                 }
                 // else leave the location empty.
             }

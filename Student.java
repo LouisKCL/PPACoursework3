@@ -9,22 +9,22 @@ import java.util.Random;
  * @author David J. Barnes, Michael Kölling, Louis Mellac, Andrei Cinca
  * @version 2020.02.11
  */
-public class Rabbit extends Animal
+public class Student extends Animal
 {
     // Characteristics shared by all rabbits (class variables).
 
-    // The age at which a rabbit can start to breed.
-    private static final int BREEDING_AGE = 5;
-    // The age to which a rabbit can live.
-    private static final int MAX_AGE = 40;
-    // The likelihood of a rabbit breeding.
-    private static final double BREEDING_PROBABILITY = 0.12;
+    // Maximum age of a student (100 days).
+    private static final int MAX_AGE = 100 * 24;
+    // The likelihood of a student breeding.
+    private static final double BREEDING_PROBABILITY = 0.25;
     // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 4;
+    private static final int MAX_OFFSPRINGS = 5;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
+    // Food value of a student
+    private static final int FOOD_VALUE = 20;
     
-    // Individual characteristics (instance fields).
+    // Instance fields:
     
     // The rabbit's age.
     private int age;
@@ -37,7 +37,7 @@ public class Rabbit extends Animal
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Rabbit(boolean randomAge, Field field, Location location)
+    public Student(boolean randomAge, Field field, Location location)
     {
         super(field, location);
         age = 0;
@@ -94,7 +94,7 @@ public class Rabbit extends Animal
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Rabbit young = new Rabbit(false, field, loc);
+            Student young = new Student(false, field, loc);
             newRabbits.add(young);
         }
     }
@@ -107,18 +107,14 @@ public class Rabbit extends Animal
     private int breed()
     {
         int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
+        if(rand.nextDouble() <= BREEDING_PROBABILITY) {
+            births = rand.nextInt(MAX_OFFSPRINGS) + 1;
         }
         return births;
     }
-
-    /**
-     * A rabbit can breed if it has reached the breeding age.
-     * @return true if the rabbit can breed, false otherwise.
-     */
-    private boolean canBreed()
+    
+    public int getFoodValue()
     {
-        return age >= BREEDING_AGE;
+        return FOOD_VALUE;
     }
 }

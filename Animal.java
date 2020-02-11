@@ -8,6 +8,9 @@ import java.util.List;
  */
 public abstract class Animal
 {
+    // Maximum amount of food an animal can have.
+    protected static final int MAX_FOOD_LEVEL = 100;
+
     // Whether the animal is alive or not.
     private boolean alive;
     // The animal's field.
