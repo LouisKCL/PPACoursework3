@@ -3,46 +3,42 @@ import java.util.Iterator;
 import java.util.Random;
 
 /**
- * A simple model of a admin.
- * admines age, move, eat rabbits, and die.
+ * A simple model of a KCLSU.
+ * KCLSU age, move, eat admin, and die.
  * 
  * @author David J. Barnes and Michael Kölling
  * @version 2016.02.29 (2)
  */
-public class Admin extends Animal
+public class KCLSU extends Animal
 {
-    // Characteristics shared by all admines (class variables).
+    // Characteristics shared by all KCLSUes (class variables).
     
-    // The age to which a admin can live (200 days).
-    private static final int MAX_AGE = 200 * 24;
-    // The likelihood of a admin breeding.
-    private static final double BREEDING_PROBABILITY = 0.03;
+    // The age to which a KCLSU can live (90 days).
+    private static final int MAX_AGE = 90 * 24;
+    // The likelihood of a KCLSU breeding.
+    private static final double BREEDING_PROBABILITY = 0.009;
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 2;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     // Default starting food.
-    private static final int DEFAULT_FOOD_LEVEL = 45;
-    // Food value for admins.
-    private static final int FOOD_VALUE = 40;
+    private static final int DEFAULT_FOOD_LEVEL = 30;
 
     // Individual characteristics (instance fields).
-    // The admin's age.
+    // The KCLSU's age.
     private int age;
-    // The admin's food level, which is increased by eating rabbits.
+    // The KCLSU's food level, which is increased by eating rabbits.
     private int foodLevel;
-    // How much food a admin is worth.
-    private int foodValue;
 
     /**
-     * Create a admin. A admin can be created as a new born (age zero
+     * Create a KCLSU. A KCLSU can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
      * 
-     * @param randomAge If true, the admin will have random age and hunger level.
+     * @param randomAge If true, the KCLSU will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Admin(boolean randomAge, Field field, Location location)
+    public KCLSU(boolean randomAge, Field field, Location location)
     {
         super(field, location);
         if(randomAge) {
@@ -56,18 +52,18 @@ public class Admin extends Animal
     }
     
     /**
-     * This is what the admin does most of the time: it hunts for
+     * This is what the KCLSU does most of the time: it hunts for
      * rabbits. In the process, it might breed, die of hunger,
      * or die of old age.
      * @param field The field currently occupied.
-     * @param newadmines A list to return newly born admines.
+     * @param newKCLSUes A list to return newly born KCLSUes.
      */
-    public void act(List<Animal> newadmin)
+    public void act(List<Animal> newKCLSU)
     {
         incrementAge();
         incrementHunger();
         if(isAlive()) {
-            giveBirth(newadmin);            
+            giveBirth(newKCLSU);            
             // Move towards a source of food if found.
             Location newLocation = findFood();
             if(newLocation == null) { 
@@ -86,7 +82,7 @@ public class Admin extends Animal
     }
 
     /**
-     * Increase the age. This could result in the admin's death.
+     * Increase the age. This could result in the KCLSU's death.
      */
     private void incrementAge()
     {
@@ -97,7 +93,7 @@ public class Admin extends Animal
     }
     
     /**
-     * Make this admin more hungry. This could result in the admin's death.
+     * Make this KCLSU more hungry. This could result in the KCLSU's death.
      */
     private void incrementHunger()
     {
@@ -120,11 +116,11 @@ public class Admin extends Animal
         while(it.hasNext()) {
             Location where = it.next();
             Object animal = field.getObjectAt(where);
-            if(animal instanceof Lecturer) {
-                Lecturer lecturer = (Lecturer) animal;
-                if(lecturer.isAlive()) { 
-                    lecturer.setDead();
-                    foodLevel = foodLevel + lecturer.getFoodValue();
+            if(animal instanceof Admin) {
+                Admin admin = (Admin) animal;
+                if(admin.isAlive()) { 
+                    admin.setDead();
+                    foodLevel = foodLevel + admin.getFoodValue();
 
 
                     return where;
@@ -135,21 +131,21 @@ public class Admin extends Animal
     }
     
     /**
-     * Check whether or not this admin is to give birth at this step.
+     * Check whether or not this KCLSU is to give birth at this step.
      * New births will be made into free adjacent locations.
-     * @param newadmins A list to return newly born admines.
+     * @param newKCLSUs A list to return newly born KCLSUes.
      */
-    private void giveBirth(List<Animal> newadmins)
+    private void giveBirth(List<Animal> newKCLSUs)
     {
-        // New admins are born into adjacent locations.
+        // New KCLSUs are born into adjacent locations.
         // Get a list of adjacent free locations.
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Admin young = new Admin(false, field, loc);
-            newadmins.add(young);
+            KCLSU young = new KCLSU(false, field, loc);
+            newKCLSUs.add(young);
         }
     }
         
@@ -165,10 +161,5 @@ public class Admin extends Animal
             births = rand.nextInt(MAX_LITTER_SIZE) + 1;
         }
         return births;
-    }
-    
-    public int getFoodValue()
-    {
-        return FOOD_VALUE;
     }
 }

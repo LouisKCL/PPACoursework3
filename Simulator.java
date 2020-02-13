@@ -19,11 +19,16 @@ public class Simulator
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 80;
     // The probability that a lecturer will be created in any given grid position.
-    private static final double LECTURER_CREATION_PROBABILITY = 0.02;
+    private static final double LECTURER_CREATION_PROBABILITY = 0.01;
     // The probability that a student will be created in any given grid position.
-    private static final double STUDENT_CREATION_PROBABILITY = 0.08;
+    private static final double STUDENT_CREATION_PROBABILITY = 0.10;
     
     private static final double ADMIN_CREATION_PROBABILITY = 0.01;
+    
+    private static final double KCLSU_CREATION_PROBABILITY = 0.009;
+    
+    private static final double TA_CREATION_PROBABILITY = 0.10;
+
 
     // List of animals in the field.
     private List<Animal> animals;
@@ -33,6 +38,9 @@ public class Simulator
     private int step;
     // A graphical view of the simulation.
     private SimulatorView view;
+    // Weather
+    private Weather weather;
+    
     
     /**
      * Construct a simulation field with default size.
@@ -58,12 +66,15 @@ public class Simulator
         
         animals = new ArrayList<>();
         field = new Field(depth, width);
+        weather = new Weather();
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
         view.setColor(Student.class, Color.ORANGE);
         view.setColor(Lecturer.class, Color.BLUE);
         view.setColor(Admin.class, Color.GREEN);
+        view.setColor(KCLSU.class, Color.RED);
+        view.setColor(TA.class, Color.BLACK);
         
         // Setup a valid starting point.
         reset();
@@ -99,6 +110,7 @@ public class Simulator
     public void simulateOneStep()
     {
         step++;
+        weather.updateWeather(step);
 
         // Provide space for newborn animals.
         List<Animal> newAnimals = new ArrayList<>();        
@@ -141,12 +153,12 @@ public class Simulator
             for(int col = 0; col < field.getWidth(); col++) {
                 if(rand.nextDouble() <= LECTURER_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Lecturer lecturer = new Lecturer(true, field, location);
+                    Lecturer lecturer = new Lecturer(true, field, location, rand.nextBoolean());
                     animals.add(lecturer);
                 }
                 else if(rand.nextDouble() <= STUDENT_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Student student = new Student(true, field, location);
+                    Student student = new Student(true, field, location, rand.nextBoolean());
                     animals.add(student);
                 }
                 else if(rand.nextDouble() <= ADMIN_CREATION_PROBABILITY) {
@@ -154,6 +166,17 @@ public class Simulator
                     Admin admin = new Admin(true, field, location);
                     animals.add(admin);
                 }
+                else if(rand.nextDouble() <= KCLSU_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    KCLSU kclsu = new KCLSU(true, field, location);
+                    animals.add(kclsu);
+                }
+                else if(rand.nextDouble() <= TA_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    TA ta = new TA(true, field, location, rand.nextBoolean());
+                    animals.add(ta);
+                }
+                
                 // else leave the location empty.
             }
         }

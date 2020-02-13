@@ -9,27 +9,28 @@ import java.util.Random;
  * @author David J. Barnes, Michael Kölling, Louis Mellac, Andrei Cinca
  * @version 2020.02.11
  */
-public class Student extends GenderedAnimal
+public class TA extends GenderedAnimal
 {
     // Characteristics shared by all rabbits (class variables).
 
-    // Maximum age of a student (100 days).
-    private static final int MAX_AGE = 100 * 24;
-    // The likelihood of a student breeding.
-    private static final double BREEDING_PROBABILITY = 0.25;
+    // Maximum age of a TA (150 days).
+    private static final int MAX_AGE = 150 * 24;
+    // The likelihood of a TA breeding.
+    private static final double BREEDING_PROBABILITY = 0.15;
     // The maximum number of births.
     private static final int MAX_OFFSPRINGS = 5;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
-    // Food value of a student
-    private static final int FOOD_VALUE = 20;
-    // Default starting food level of a student.
-    private static final int DEFAULT_FOOD_LEVEL = 30;
+    // Food value of a TA
+    private static final int FOOD_VALUE = 15;
+    // Default starting food level of a TA.
+    private static final int DEFAULT_FOOD_LEVEL = 20;
     
     // Instance fields:
     
     // The rabbit's age.
     private int age;
+    
 
     /**
      * Create a new rabbit. A rabbit may be created with age
@@ -39,7 +40,7 @@ public class Student extends GenderedAnimal
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Student(boolean randomAge, Field field, Location location, boolean isFemale)
+    public TA(boolean randomAge, Field field, Location location, boolean isFemale)
     {
         super(location, field, isFemale);
         age = 0;
@@ -96,7 +97,7 @@ public class Student extends GenderedAnimal
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Student young = new Student(false, field, loc, rand.nextBoolean());
+            TA young = new TA(false, field, loc, rand.nextBoolean());
             newRabbits.add(young);
         }
     }
@@ -118,5 +119,6 @@ public class Student extends GenderedAnimal
     public int getFoodValue()
     {
         return FOOD_VALUE;
-    }
+    }    
+    
 }

@@ -9,7 +9,7 @@ import java.util.Random;
  * @author David J. Barnes and Michael Kölling
  * @version 2016.02.29 (2)
  */
-public class Lecturer extends Animal
+public class Lecturer extends GenderedAnimal
 {
     // Characteristics shared by all foxes (class variables).
     
@@ -22,7 +22,7 @@ public class Lecturer extends Animal
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     // Default starting food.
-    private static final int DEFAULT_FOOD_VALUE = 20;
+    private static final int DEFAULT_FOOD_LEVEL = 20;
     // Food value for lecturers.
     private static final int FOOD_VALUE = 45;
 
@@ -42,16 +42,16 @@ public class Lecturer extends Animal
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Lecturer(boolean randomAge, Field field, Location location)
+    public Lecturer(boolean randomAge, Field field, Location location, boolean isFemale)
     {
-        super(field, location);
+        super(location, field, isFemale);
         if(randomAge) {
             age = rand.nextInt(MAX_AGE);
             foodLevel = rand.nextInt(MAX_FOOD_LEVEL);
         }
         else {
             age = 0;
-            foodLevel = DEFAULT_FOOD_VALUE;
+            foodLevel = DEFAULT_FOOD_LEVEL;
         }
     }
     
@@ -146,7 +146,7 @@ public class Lecturer extends Animal
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Lecturer young = new Lecturer(false, field, loc);
+            Lecturer young = new Lecturer(false, field, loc, rand.nextBoolean());
             newLecturers.add(young);
         }
     }
@@ -164,7 +164,7 @@ public class Lecturer extends Animal
     private int breed()
     {
         int births = 0;
-        if(rand.nextDouble() <= BREEDING_PROBABILITY) {
+        if(canBreed(this) && rand.nextDouble() <= BREEDING_PROBABILITY) {
             births = rand.nextInt(MAX_LITTER_SIZE) + 1;
         }
         return births;
