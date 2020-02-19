@@ -14,17 +14,17 @@ public class Lecturer extends GenderedAnimal
     // Characteristics shared by all foxes (class variables).
     
     // The age to which a Lecturer can live (200 days).
-    private static final int MAX_AGE = 200 * 24;
+    private static final int MAX_AGE = 80 * 24;
     // The likelihood of a fox breeding.
-    private static final double BREEDING_PROBABILITY = 0.05;
+    private static final double BREEDING_PROBABILITY = 0.08;
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 2;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     // Default starting food.
-    private static final int DEFAULT_FOOD_LEVEL = 20;
+    private static final int DEFAULT_FOOD_LEVEL = 30;
     // Food value for lecturers.
-    private static final int FOOD_VALUE = 45;
+    private static final int FOOD_VALUE = 20;
 
     // Individual characteristics (instance fields).
     // The fox's age.
@@ -42,9 +42,9 @@ public class Lecturer extends GenderedAnimal
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Lecturer(boolean randomAge, Field field, Location location, boolean isFemale)
+    public Lecturer(boolean randomAge, Field field, Location location, boolean isFemale, Weather weather)
     {
-        super(location, field, isFemale);
+        super(location, field, isFemale, weather);
         if(randomAge) {
             age = rand.nextInt(MAX_AGE);
             foodLevel = rand.nextInt(MAX_FOOD_LEVEL);
@@ -52,6 +52,23 @@ public class Lecturer extends GenderedAnimal
         else {
             age = 0;
             foodLevel = DEFAULT_FOOD_LEVEL;
+        }
+    }
+    
+    public void move()
+    {
+        Location newLocation = findFood();
+        if(newLocation == null) { 
+            // No food found - try to move to a free location.
+            newLocation = getField().freeAdjacentLocation(getLocation());
+        }
+        // See if it was possible to move.
+        if(newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
+            // Overcrowding.
+            setDead();
         }
     }
     
@@ -67,21 +84,13 @@ public class Lecturer extends GenderedAnimal
         incrementAge();
         incrementHunger();
         if(isAlive()) {
-            giveBirth(newLecturer);            
-            // Move towards a source of food if found.
-            Location newLocation = findFood();
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
+            if (weather.isNight()) {
+                giveBirth(newLecturer); 
+            }          
+            move();
+            if(isAlive() && weather.isCold())
+                move();
+            
         }
     }
 
@@ -124,7 +133,8 @@ public class Lecturer extends GenderedAnimal
                 Student student = (Student) animal;
                 if(student.isAlive()) { 
                     student.setDead();
-                    foodLevel = foodLevel + student.getFoodValue();
+                    if (foodLevel < MAX_FOOD_LEVEL)
+                        foodLevel = foodLevel + student.getFoodValue();
                     return where;
                 }
             }
@@ -146,7 +156,7 @@ public class Lecturer extends GenderedAnimal
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Lecturer young = new Lecturer(false, field, loc, rand.nextBoolean());
+            Lecturer young = new Lecturer(false, field, loc, rand.nextBoolean(), weather);
             newLecturers.add(young);
         }
     }

@@ -1,6 +1,6 @@
 import java.util.List;
 import java.util.Random;
-
+import java.util.Iterator;
 /**
  * A simple model of a rabbit.
  * Rabbits age, move, breed, and die.
@@ -13,20 +13,20 @@ public class TA extends GenderedAnimal
 {
     // Characteristics shared by all rabbits (class variables).
 
-    // Maximum age of a TA (150 days).
-    private static final int MAX_AGE = 150 * 24;
+    // Maximum age of a TA.
+    private static final int MAX_AGE = 40 * 24;
     // The likelihood of a TA breeding.
-    private static final double BREEDING_PROBABILITY = 0.15;
+    private static final double BREEDING_PROBABILITY = 0.10;
     // The maximum number of births.
-    private static final int MAX_OFFSPRINGS = 5;
+    private static final int MAX_OFFSPRINGS = 3;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     // Food value of a TA
     private static final int FOOD_VALUE = 15;
     // Default starting food level of a TA.
-    private static final int DEFAULT_FOOD_LEVEL = 20;
+    private static final int DEFAULT_FOOD_LEVEL = 25;
     
-    // Instance fields:
+    private int foodLevel;
     
     // The rabbit's age.
     private int age;
@@ -40,35 +40,89 @@ public class TA extends GenderedAnimal
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public TA(boolean randomAge, Field field, Location location, boolean isFemale)
+    public TA(boolean randomAge, Field field, Location location, boolean isFemale, Weather weather)
     {
-        super(location, field, isFemale);
+        super(location, field, isFemale, weather);
         age = 0;
         if(randomAge) {
             age = rand.nextInt(MAX_AGE);
+            foodLevel = rand.nextInt(MAX_FOOD_LEVEL);
+        }
+        else {
+            age = 0;
+            foodLevel = DEFAULT_FOOD_LEVEL;
         }
     }
+    
+        public void move()
+            {
+                Location newLocation = findFood();
+                if(newLocation == null) { 
+                    // No food found - try to move to a free location.
+                    newLocation = getField().freeAdjacentLocation(getLocation());
+                }
+                // See if it was possible to move.
+                if(newLocation != null) {
+                    setLocation(newLocation);
+                }
+                else {
+                    // Overcrowding.
+                    setDead();
+                }
+            }
+        
+        private void incrementHunger()
+            {
+                foodLevel--;
+                if(foodLevel <= 0) {
+                    setDead();
+                }
+            }
+        
+        /**
+         * Look for rabbits adjacent to the current location.
+         * Only the first live rabbit is eaten.
+         * @return Where food was found, or null if it wasn't.
+         */
+        private Location findFood()
+        {
+            Field field = getField();
+            List<Location> adjacent = field.adjacentLocations(getLocation());
+            Iterator<Location> it = adjacent.iterator();
+            while(it.hasNext()) {
+                Location where = it.next();
+                Object food = field.getObjectAt(where);
+                if(food instanceof Documentation) {
+                    Documentation doc = (Documentation) food;
+                    if(doc.isAlive() && doc.isEdible()) { 
+                        doc.setDead();
+                        if(foodLevel<MAX_FOOD_LEVEL)
+                            foodLevel = foodLevel + doc.getFoodValue();
+                        return where;
+                    }
+                }
+            }
+            return null;
+        }
+
     
     /**
      * This is what the rabbit does most of the time - it runs 
      * around. Sometimes it will breed or die of old age.
      * @param newRabbits A list to return newly born rabbits.
      */
-    public void act(List<Animal> newRabbits)
+    public void act(List<Animal> newTA)
     {
         incrementAge();
+        incrementHunger();
         if(isAlive()) {
-            giveBirth(newRabbits);            
+            if (!weather.isCold())
+                giveBirth(newTA);       
             // Try to move into a free location.
-            Location newLocation = getField().freeAdjacentLocation(getLocation());
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
+            move();
+            
         }
+        
     }
 
     /**
@@ -88,7 +142,7 @@ public class TA extends GenderedAnimal
      * New births will be made into free adjacent locations.
      * @param newRabbits A list to return newly born rabbits.
      */
-    private void giveBirth(List<Animal> newRabbits)
+    private void giveBirth(List<Animal> newTA)
     {
         // New rabbits are born into adjacent locations.
         // Get a list of adjacent free locations.
@@ -97,8 +151,8 @@ public class TA extends GenderedAnimal
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            TA young = new TA(false, field, loc, rand.nextBoolean());
-            newRabbits.add(young);
+            TA young = new TA(false, field, loc, rand.nextBoolean(), weather);
+            newTA.add(young);
         }
     }
         

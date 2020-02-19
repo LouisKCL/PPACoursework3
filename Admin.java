@@ -11,18 +11,18 @@ import java.util.Random;
  */
 public class Admin extends Animal
 {
-    // Characteristics shared by all admines (class variables).
+    // Characteristics shared by all admins (class variables).
     
-    // The age to which a admin can live (200 days).
-    private static final int MAX_AGE = 200 * 24;
+    // The age to which a admin can live.
+    private static final int MAX_AGE = 80 * 24;
     // The likelihood of a admin breeding.
-    private static final double BREEDING_PROBABILITY = 0.03;
+    private static final double BREEDING_PROBABILITY = 0.06;
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 2;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     // Default starting food.
-    private static final int DEFAULT_FOOD_LEVEL = 45;
+    private static final int DEFAULT_FOOD_LEVEL = 30;
     // Food value for admins.
     private static final int FOOD_VALUE = 40;
 
@@ -31,8 +31,7 @@ public class Admin extends Animal
     private int age;
     // The admin's food level, which is increased by eating rabbits.
     private int foodLevel;
-    // How much food a admin is worth.
-    private int foodValue;
+    
 
     /**
      * Create a admin. A admin can be created as a new born (age zero
@@ -42,9 +41,9 @@ public class Admin extends Animal
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Admin(boolean randomAge, Field field, Location location)
+    public Admin(boolean randomAge, Field field, Location location, Weather weather)
     {
-        super(field, location);
+        super(field, location, weather);
         if(randomAge) {
             age = rand.nextInt(MAX_AGE);
             foodLevel = rand.nextInt(MAX_FOOD_LEVEL);
@@ -62,12 +61,17 @@ public class Admin extends Animal
      * @param field The field currently occupied.
      * @param newadmines A list to return newly born admines.
      */
-    public void act(List<Animal> newadmin)
+    public void act(List<Animal> newAdmin)
     {
         incrementAge();
         incrementHunger();
         if(isAlive()) {
-            giveBirth(newadmin);            
+            if (weather.isNight()) {
+                giveBirth(newAdmin);
+                if (weather.isCold()) 
+                    giveBirth(newAdmin);
+            }
+            
             // Move towards a source of food if found.
             Location newLocation = findFood();
             if(newLocation == null) { 
@@ -82,6 +86,7 @@ public class Admin extends Animal
                 // Overcrowding.
                 setDead();
             }
+            
         }
     }
 
@@ -124,9 +129,8 @@ public class Admin extends Animal
                 Lecturer lecturer = (Lecturer) animal;
                 if(lecturer.isAlive()) { 
                     lecturer.setDead();
-                    foodLevel = foodLevel + lecturer.getFoodValue();
-
-
+                    if (foodLevel < MAX_FOOD_LEVEL)
+                        foodLevel = foodLevel + lecturer.getFoodValue();
                     return where;
                 }
             }
@@ -148,7 +152,7 @@ public class Admin extends Animal
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Admin young = new Admin(false, field, loc);
+            Admin young = new Admin(false, field, loc, weather);
             newadmins.add(young);
         }
     }

@@ -5,11 +5,11 @@ import java.util.Iterator;
 import java.awt.Color;
 
 /**
- * A simple predator-prey simulator, based on a rectangular field
- * containing students and lecturers.
+ * A simple predator-prey simulator based on a rectangular field
+ * containing students, lecturers, KCLSU, admin staff, and TAs.
  * 
- * @author David J. Barnes and Michael Kölling
- * @version 2016.02.29 (2)
+ * @author Louis Mellac, Andrei Cinca, David J. Barnes, and Michael Kölling
+ * @version 2020.02.18
  */
 public class Simulator
 {
@@ -19,15 +19,19 @@ public class Simulator
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 80;
     // The probability that a lecturer will be created in any given grid position.
-    private static final double LECTURER_CREATION_PROBABILITY = 0.01;
+    private static final double LECTURER_CREATION_PROBABILITY = 0.03;
     // The probability that a student will be created in any given grid position.
-    private static final double STUDENT_CREATION_PROBABILITY = 0.10;
-    
-    private static final double ADMIN_CREATION_PROBABILITY = 0.01;
-    
+    private static final double STUDENT_CREATION_PROBABILITY = 0.05;
+    // The probability that an admin will be created in any given grid position.
+    private static final double ADMIN_CREATION_PROBABILITY = 0.04;
+    // The probability that a KCLSU will be created in any given grid position.
     private static final double KCLSU_CREATION_PROBABILITY = 0.009;
-    
-    private static final double TA_CREATION_PROBABILITY = 0.10;
+    // The probability that a TA will be created in any given grid position.
+    private static final double TA_CREATION_PROBABILITY = 0.05;
+    // The probability that a grade will be created in any given grid position.
+    private static final double GRADE_CREATION_PROBABILITY = 0.10;
+    // The probability that a documentation will be created in any given grid position.
+    private static final double DOCUMENTATION_CREATION_PROBABILITY = 0.10;
 
 
     // List of animals in the field.
@@ -38,7 +42,7 @@ public class Simulator
     private int step;
     // A graphical view of the simulation.
     private SimulatorView view;
-    // Weather
+    // The current state of the weather.
     private Weather weather;
     
     
@@ -72,9 +76,11 @@ public class Simulator
         view = new SimulatorView(depth, width);
         view.setColor(Student.class, Color.ORANGE);
         view.setColor(Lecturer.class, Color.BLUE);
-        view.setColor(Admin.class, Color.GREEN);
+        view.setColor(Admin.class, Color.CYAN);
         view.setColor(KCLSU.class, Color.RED);
         view.setColor(TA.class, Color.BLACK);
+        view.setColor(Grade.class, Color.GREEN);
+        view.setColor(Documentation.class, Color.GREEN);
         
         // Setup a valid starting point.
         reset();
@@ -86,7 +92,7 @@ public class Simulator
      */
     public void runLongSimulation()
     {
-        simulate(4000);
+        simulate(1000);
     }
     
     /**
@@ -123,7 +129,7 @@ public class Simulator
             }
         }
                
-        // Add the newly born lectureres and students to the main lists.
+        // Add the newly born animals to the main lists.
         animals.addAll(newAnimals);
 
         view.showStatus(step, field);
@@ -143,7 +149,7 @@ public class Simulator
     }
     
     /**
-     * Randomly populate the field with lectureres and students.
+     * Randomly populate the field with animals.
      */
     private void populate()
     {
@@ -153,30 +159,39 @@ public class Simulator
             for(int col = 0; col < field.getWidth(); col++) {
                 if(rand.nextDouble() <= LECTURER_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Lecturer lecturer = new Lecturer(true, field, location, rand.nextBoolean());
+                    Lecturer lecturer = new Lecturer(true, field, location, rand.nextBoolean(), weather);
                     animals.add(lecturer);
                 }
                 else if(rand.nextDouble() <= STUDENT_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Student student = new Student(true, field, location, rand.nextBoolean());
+                    Student student = new Student(true, field, location, rand.nextBoolean(), weather);
                     animals.add(student);
                 }
                 else if(rand.nextDouble() <= ADMIN_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Admin admin = new Admin(true, field, location);
+                    Admin admin = new Admin(true, field, location, weather);
                     animals.add(admin);
                 }
                 else if(rand.nextDouble() <= KCLSU_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    KCLSU kclsu = new KCLSU(true, field, location);
+                    KCLSU kclsu = new KCLSU(true, field, location, weather);
                     animals.add(kclsu);
                 }
                 else if(rand.nextDouble() <= TA_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    TA ta = new TA(true, field, location, rand.nextBoolean());
+                    TA ta = new TA(true, field, location, rand.nextBoolean(), weather);
                     animals.add(ta);
                 }
-                
+                else if(rand.nextDouble() <=  GRADE_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Grade  grade = new Grade(field, location, weather);
+                    animals.add(grade);
+                }
+                else if(rand.nextDouble() <=  DOCUMENTATION_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Documentation  doc = new Documentation(field, location, weather);
+                    animals.add(doc);
+                }
                 // else leave the location empty.
             }
         }

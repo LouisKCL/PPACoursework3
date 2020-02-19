@@ -1,22 +1,37 @@
 import java.util.List;
+import java.util.Random;
 
 /**
  * A class representing shared characteristics of animals.
  * 
- * @author David J. Barnes and Michael Kölling
- * @version 2016.02.29 (2)
+ * @author Louis Mellac, Andrei Cinca, David J. Barnes, and Michael Kölling
+ * @version 2020.02.18
  */
 public abstract class Animal
 {
     // Maximum amount of food an animal can have.
     protected static final int MAX_FOOD_LEVEL = 100;
-
+    
+    protected static final double PROBABILITY_OF_SAD = 0.1;
+    
+    protected static final double PROBABILITY_OF_SAD_SPREAD = 0.2;
+    
+    protected static final double LETHALITY_OF_SAD = 0.08;
+    
+    protected static final Random rand = Randomizer.getRandom();
+    
     // Whether the animal is alive or not.
-    private boolean alive;
+    protected boolean alive;
     // The animal's field.
     protected Field field;
     // The animal's position in the field.
     protected Location location;
+    
+    protected Weather weather;
+    
+    protected int age;
+    
+    protected boolean hasSAD;
     
     /**
      * Create a new animal at location in field.
@@ -24,10 +39,11 @@ public abstract class Animal
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Animal(Field field, Location location)
+    public Animal(Field field, Location location, Weather weather)
     {
         alive = true;
         this.field = field;
+        this.weather = weather;
         setLocation(location);
     }
     
@@ -37,7 +53,7 @@ public abstract class Animal
      * @param newAnimals A list to receive newly born animals.
      */
     abstract public void act(List<Animal> newAnimals);
-
+    
     /**
      * Check whether the animal is alive or not.
      * @return true if the animal is still alive.
@@ -91,4 +107,23 @@ public abstract class Animal
     {
         return field;
     }
+    
+    /**
+     * Check to see if it catches S.A.D.
+     */
+    protected void getInfected()
+    {
+        if (rand.nextDouble() <= PROBABILITY_OF_SAD) {
+            hasSAD = true;
+        }
+    }
+    
+    /**
+     * Recieves infection
+     */
+    protected void makeSAD()
+    {
+        hasSAD = true;
+    }
+    
 }
