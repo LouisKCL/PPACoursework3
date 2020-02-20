@@ -1,36 +1,25 @@
 import java.util.List;
-import java.util.Random;
 import java.util.Iterator;
+
 /**
- * A simple model of a rabbit.
- * Rabbits age, move, breed, and die.
- * We will all die eventually.
+ * A model of a Teaching Assistant (TA)
+ * TAs 
  * 
  * @author David J. Barnes, Michael Kölling, Louis Mellac, Andrei Cinca
  * @version 2020.02.11
  */
 public class TA extends GenderedAnimal
 {
-    // Characteristics shared by all rabbits (class variables).
-
     // Maximum age of a TA.
     private static final int MAX_AGE = 40 * 24;
     // The likelihood of a TA breeding.
     private static final double BREEDING_PROBABILITY = 0.10;
     // The maximum number of births.
-    private static final int MAX_OFFSPRINGS = 3;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
+    private static final int MAX_OFFSPRING = 3;
     // Food value of a TA
     private static final int FOOD_VALUE = 15;
     // Default starting food level of a TA.
     private static final int DEFAULT_FOOD_LEVEL = 25;
-    
-    private int foodLevel;
-    
-    // The rabbit's age.
-    private int age;
-    
 
     /**
      * Create a new rabbit. A rabbit may be created with age
@@ -54,64 +43,59 @@ public class TA extends GenderedAnimal
         }
     }
     
-        public void move()
-            {
-                Location newLocation = findFood();
-                if(newLocation == null) { 
-                    // No food found - try to move to a free location.
-                    newLocation = getField().freeAdjacentLocation(getLocation());
-                }
-                // See if it was possible to move.
-                if(newLocation != null) {
-                    setLocation(newLocation);
-                }
-                else {
-                    // Overcrowding.
-                    setDead();
-                }
-            }
+    public int getMAX_AGE()
+    {
+        return MAX_AGE;
+    }
+    public double getBREEDING_PROBABILITY()
+    {
+        return BREEDING_PROBABILITY;
+    }
+    public int getMAX_OFFSPRING()
+    {
+        return MAX_AGE;
+    }
+    public int getFOOD_VALUE()
+    {
+        return FOOD_VALUE;
+    }
+    public int getDEFAULT_FOOD_LEVEL()
+    {
+        return DEFAULT_FOOD_LEVEL;
+    }
         
-        private void incrementHunger()
-            {
-                foodLevel--;
-                if(foodLevel <= 0) {
-                    setDead();
+    /**
+     * Look for rabbits adjacent to the current location.
+     * Only the first live rabbit is eaten.
+     * @return Where food was found, or null if it wasn't.
+     */
+    protected Location findFood()
+    {
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        while(it.hasNext()) {
+            Location where = it.next();
+            Object food = field.getObjectAt(where);
+            if(food instanceof Documentation) {
+                Documentation doc = (Documentation) food;
+                if(doc.isAlive() && doc.isEdible()) { 
+                    doc.setDead();
+                    if(foodLevel<MAX_FOOD_LEVEL)
+                        foodLevel = foodLevel + doc.getFOOD_VALUE();
+                    return where;
                 }
             }
-        
-        /**
-         * Look for rabbits adjacent to the current location.
-         * Only the first live rabbit is eaten.
-         * @return Where food was found, or null if it wasn't.
-         */
-        private Location findFood()
-        {
-            Field field = getField();
-            List<Location> adjacent = field.adjacentLocations(getLocation());
-            Iterator<Location> it = adjacent.iterator();
-            while(it.hasNext()) {
-                Location where = it.next();
-                Object food = field.getObjectAt(where);
-                if(food instanceof Documentation) {
-                    Documentation doc = (Documentation) food;
-                    if(doc.isAlive() && doc.isEdible()) { 
-                        doc.setDead();
-                        if(foodLevel<MAX_FOOD_LEVEL)
-                            foodLevel = foodLevel + doc.getFoodValue();
-                        return where;
-                    }
-                }
-            }
-            return null;
         }
-
+        return null;
+    }
     
     /**
      * This is what the rabbit does most of the time - it runs 
      * around. Sometimes it will breed or die of old age.
      * @param newRabbits A list to return newly born rabbits.
      */
-    public void act(List<Animal> newTA)
+    public void act(List<Entity> newTA)
     {
         incrementAge();
         incrementHunger();
@@ -126,53 +110,21 @@ public class TA extends GenderedAnimal
     }
 
     /**
-     * Increase the age.
-     * This could result in the rabbit's death.
-     */
-    private void incrementAge()
-    {
-        age++;
-        if(age > MAX_AGE) {
-            setDead();
-        }
-    }
-    
-    /**
      * Check whether or not this rabbit is to give birth at this step.
      * New births will be made into free adjacent locations.
      * @param newRabbits A list to return newly born rabbits.
      */
-    private void giveBirth(List<Animal> newTA)
+    protected void giveBirth(List<Entity> newTA)
     {
         // New rabbits are born into adjacent locations.
         // Get a list of adjacent free locations.
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
+        int births = genderedBreed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
             TA young = new TA(false, field, loc, rand.nextBoolean(), weather);
             newTA.add(young);
         }
     }
-        
-    /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    private int breed()
-    {
-        int births = 0;
-        if(canBreed(this) && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_OFFSPRINGS) + 1;
-        }
-        return births;
-    }
-    
-    public int getFoodValue()
-    {
-        return FOOD_VALUE;
-    }    
-    
 }

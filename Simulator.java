@@ -29,13 +29,12 @@ public class Simulator
     // The probability that a TA will be created in any given grid position.
     private static final double TA_CREATION_PROBABILITY = 0.05;
     // The probability that a grade will be created in any given grid position.
-    private static final double GRADE_CREATION_PROBABILITY = 0.10;
+    private static final double GRADE_CREATION_PROBABILITY = 0.08;
     // The probability that a documentation will be created in any given grid position.
-    private static final double DOCUMENTATION_CREATION_PROBABILITY = 0.10;
+    private static final double DOCUMENTATION_CREATION_PROBABILITY = 0.08;
 
-
-    // List of animals in the field.
-    private List<Animal> animals;
+    // List of entities in the field.
+    private List<Entity> entities;
     // The current state of the field.
     private Field field;
     // The current step of the simulation.
@@ -68,7 +67,7 @@ public class Simulator
             width = DEFAULT_WIDTH;
         }
         
-        animals = new ArrayList<>();
+        entities = new ArrayList<>();
         field = new Field(depth, width);
         weather = new Weather();
 
@@ -104,34 +103,32 @@ public class Simulator
     {
         for(int step = 1; step <= numSteps && view.isViable(field); step++) {
             simulateOneStep();
-            // delay(60);   // uncomment this to run more slowly
+            //delay(60);   // uncomment this to run more slowly
         }
     }
     
     /**
      * Run the simulation from its current state for a single step.
-     * Iterate over the whole field updating the state of each
-     * lecturer and student.
+     * Iterate over the whole field updating the state of each entity and plant.
      */
     public void simulateOneStep()
     {
         step++;
+        // Updates the weather.
         weather.updateWeather(step);
 
-        // Provide space for newborn animals.
-        List<Animal> newAnimals = new ArrayList<>();        
-        // Let all students act.
-        for(Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
-            Animal animal = it.next();
-            animal.act(newAnimals);
-            if(! animal.isAlive()) {
+        // Provide space for newborn entities.
+        List<Entity> newEntities = new ArrayList<>();
+        // Let all entities act.
+        for(Iterator<Entity> it = entities.iterator(); it.hasNext(); ) {
+            Entity entity = it.next();
+            entity.act(newEntities);
+            if(!entity.isAlive()) {
                 it.remove();
             }
-        }
-               
-        // Add the newly born animals to the main lists.
-        animals.addAll(newAnimals);
-
+        }     
+        // Add the newly born entities to the main lists.
+        entities.addAll(newEntities);
         view.showStatus(step, field);
     }
         
@@ -141,7 +138,7 @@ public class Simulator
     public void reset()
     {
         step = 0;
-        animals.clear();
+        entities.clear();
         populate();
         
         // Show the starting state in the view.
@@ -149,7 +146,7 @@ public class Simulator
     }
     
     /**
-     * Randomly populate the field with animals.
+     * Randomly populate the field with entities.
      */
     private void populate()
     {
@@ -160,37 +157,37 @@ public class Simulator
                 if(rand.nextDouble() <= LECTURER_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
                     Lecturer lecturer = new Lecturer(true, field, location, rand.nextBoolean(), weather);
-                    animals.add(lecturer);
+                    entities.add(lecturer);
                 }
                 else if(rand.nextDouble() <= STUDENT_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
                     Student student = new Student(true, field, location, rand.nextBoolean(), weather);
-                    animals.add(student);
+                    entities.add(student);
                 }
                 else if(rand.nextDouble() <= ADMIN_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
                     Admin admin = new Admin(true, field, location, weather);
-                    animals.add(admin);
+                    entities.add(admin);
                 }
                 else if(rand.nextDouble() <= KCLSU_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
                     KCLSU kclsu = new KCLSU(true, field, location, weather);
-                    animals.add(kclsu);
+                    entities.add(kclsu);
                 }
                 else if(rand.nextDouble() <= TA_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
                     TA ta = new TA(true, field, location, rand.nextBoolean(), weather);
-                    animals.add(ta);
+                    entities.add(ta);
                 }
                 else if(rand.nextDouble() <=  GRADE_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
                     Grade  grade = new Grade(field, location, weather);
-                    animals.add(grade);
+                    entities.add(grade);
                 }
                 else if(rand.nextDouble() <=  DOCUMENTATION_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
                     Documentation  doc = new Documentation(field, location, weather);
-                    animals.add(doc);
+                    entities.add(doc);
                 }
                 // else leave the location empty.
             }

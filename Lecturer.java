@@ -1,6 +1,5 @@
 import java.util.List;
 import java.util.Iterator;
-import java.util.Random;
 
 /**
  * A simple model of a fox.
@@ -18,21 +17,11 @@ public class Lecturer extends GenderedAnimal
     // The likelihood of a fox breeding.
     private static final double BREEDING_PROBABILITY = 0.08;
     // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 2;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
+    private static final int MAX_OFFSPRING = 2;
     // Default starting food.
     private static final int DEFAULT_FOOD_LEVEL = 30;
     // Food value for lecturers.
     private static final int FOOD_VALUE = 20;
-
-    // Individual characteristics (instance fields).
-    // The fox's age.
-    private int age;
-    // The fox's food level, which is increased by eating rabbits.
-    private int foodLevel;
-    // How much food a lecturer is worth.
-    private int foodValue;
 
     /**
      * Create a fox. A fox can be created as a new born (age zero
@@ -55,21 +44,30 @@ public class Lecturer extends GenderedAnimal
         }
     }
     
-    public void move()
+    /**
+     * Look for rabbits adjacent to the current location.
+     * Only the first live rabbit is eaten.
+     * @return Where food was found, or null if it wasn't.
+     */
+    protected Location findFood()
     {
-        Location newLocation = findFood();
-        if(newLocation == null) { 
-            // No food found - try to move to a free location.
-            newLocation = getField().freeAdjacentLocation(getLocation());
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        while(it.hasNext()) {
+            Location where = it.next();
+            Object animal = field.getObjectAt(where);
+            if(animal instanceof Student) {
+                Student prey = (Student) animal;
+                if(prey.isAlive()) { 
+                    prey.setDead();
+                    if (foodLevel < MAX_FOOD_LEVEL)
+                        foodLevel = foodLevel + prey.getFOOD_VALUE();
+                    return where;
+                }
+            }
         }
-        // See if it was possible to move.
-        if(newLocation != null) {
-            setLocation(newLocation);
-        }
-        else {
-            // Overcrowding.
-            setDead();
-        }
+        return null;
     }
     
     /**
@@ -79,7 +77,7 @@ public class Lecturer extends GenderedAnimal
      * @param field The field currently occupied.
      * @param newFoxes A list to return newly born foxes.
      */
-    public void act(List<Animal> newLecturer)
+    public void act(List<Entity> newLecturer)
     {
         incrementAge();
         incrementHunger();
@@ -90,56 +88,7 @@ public class Lecturer extends GenderedAnimal
             move();
             if(isAlive() && weather.isCold())
                 move();
-            
         }
-    }
-
-    /**
-     * Increase the age. This could result in the fox's death.
-     */
-    private void incrementAge()
-    {
-        age++;
-        if(age > MAX_AGE) {
-            setDead();
-        }
-    }
-    
-    /**
-     * Make this fox more hungry. This could result in the fox's death.
-     */
-    private void incrementHunger()
-    {
-        foodLevel--;
-        if(foodLevel <= 0) {
-            setDead();
-        }
-    }
-    
-    /**
-     * Look for rabbits adjacent to the current location.
-     * Only the first live rabbit is eaten.
-     * @return Where food was found, or null if it wasn't.
-     */
-    private Location findFood()
-    {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Student) {
-                Student student = (Student) animal;
-                if(student.isAlive()) { 
-                    student.setDead();
-                    if (foodLevel < MAX_FOOD_LEVEL)
-                        foodLevel = foodLevel + student.getFoodValue();
-                    return where;
-                }
-            }
-        }
-        return null;
     }
     
     /**
@@ -147,13 +96,13 @@ public class Lecturer extends GenderedAnimal
      * New births will be made into free adjacent locations.
      * @param newLecturers A list to return newly born foxes.
      */
-    private void giveBirth(List<Animal> newLecturers)
+    protected void giveBirth(List<Entity> newLecturers)
     {
         // New lecturers are born into adjacent locations.
         // Get a list of adjacent free locations.
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
+        int births = genderedBreed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
             Lecturer young = new Lecturer(false, field, loc, rand.nextBoolean(), weather);
@@ -161,22 +110,24 @@ public class Lecturer extends GenderedAnimal
         }
     }
     
-    public int getFoodValue()
+    public int getMAX_AGE()
+    {
+        return MAX_AGE;
+    }
+    public double getBREEDING_PROBABILITY()
+    {
+        return BREEDING_PROBABILITY;
+    }
+    public int getMAX_OFFSPRING()
+    {
+        return MAX_AGE;
+    }
+    public int getFOOD_VALUE()
     {
         return FOOD_VALUE;
     }
-    
-    /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    private int breed()
+    public int getDEFAULT_FOOD_LEVEL()
     {
-        int births = 0;
-        if(canBreed(this) && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
+        return DEFAULT_FOOD_LEVEL;
     }
 }

@@ -2,25 +2,24 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Write a description of class Grade here.
+ * This class describes represents the characteristics of a documentation plant.
  *
- * @author (your name)
- * @version (a version number or a date)
+ * @author Louis Mellac and Andrei Cinca
+ * @version 2020.02.20
  */
 public class Documentation extends Plant
 {
+    // The maximum age of a documentation plant.
     private static final int MAX_AGE = 35* 24;
-    // The likelihood of a admin breeding.
+    // The likelihood of a documentation plant spreading successfully.
     private static final double SEEDING_PROBABILITY = 0.04;
-    // The maximum number of births.
+    // The maximum number of new seeds a documentation plant can make.
     private static final int MAX_SEEDLINGS = 5;
-    
-    private static final Random rand = Randomizer.getRandom();
-    
-    private static final int SEEDING_AGE=30;
-    
+    // The age at which a documentation plant can start spreading seeds.
+    private static final int SEEDING_AGE = 30;
+    // The age at which a documentation plant can be eaten.
     private static final int EDIBLE_AGE = 20;
-    // Food value for admins.
+    // The amount of food an animal gets when eating a documentation plant.
     private static final int FOOD_VALUE = 10;
 
     public Documentation(Field field, Location location, Weather weather)
@@ -28,52 +27,28 @@ public class Documentation extends Plant
         super(field,location,weather);
     }
     
-    public int getFoodValue()
+    public int getMAX_AGE()
+    {
+        return MAX_AGE;
+    }
+    public int getMAX_SEEDLINGS()
+    {
+        return MAX_SEEDLINGS;
+    }
+    public int getSEEDING_AGE()
+    {
+        return SEEDING_AGE;
+    }
+    public int getEDIBLE_AGE()
+    {
+        return EDIBLE_AGE;
+    }
+    public int getFOOD_VALUE()
     {
         return FOOD_VALUE;
     }
-    
-    /**
-     * Make this animal act - that is: make it do
-     * whatever it wants/needs to do.
-     * @param newAnimals A list to receive newly born animals.
-     */
-    public void act(List<Animal> newDocs){
-        if (isAlive()) {
-            giveBirth(newDocs);
-        }
-    }
-    
-    private void giveBirth(List<Animal> newDocs)
+    public double getSEEDING_PROBABILITY()
     {
-        // New KCLSUs are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Documentation doc = new Documentation(field, loc, weather);
-            newDocs.add(doc);
-        }
-    }
-        
-    /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    private int breed()
-    {
-        int births = 0;
-        if(rand.nextDouble() <= SEEDING_PROBABILITY && age>=SEEDING_AGE) {
-            births = rand.nextInt(MAX_SEEDLINGS) + 1;
-        }
-        return births;
-    }
-    
-    public boolean isEdible()
-    {
-        return (age > EDIBLE_AGE);
+        return SEEDING_PROBABILITY;
     }
 }

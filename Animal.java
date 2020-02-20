@@ -1,129 +1,130 @@
 import java.util.List;
-import java.util.Random;
 
 /**
- * A class representing shared characteristics of animals.
+ * A class representing the shared characteristics of all animals in the
+ * simulation.
  * 
  * @author Louis Mellac, Andrei Cinca, David J. Barnes, and Michael Kölling
  * @version 2020.02.18
  */
-public abstract class Animal
+public abstract class Animal extends Entity
 {
     // Maximum amount of food an animal can have.
     protected static final int MAX_FOOD_LEVEL = 100;
+    // The amount of food the animal currently has.
+    protected static final double PROBABILITY_OF_SAD = 0.005;
+    protected static final double PROBABILITY_OF_SPREADING_SAD = 0.10;
+    protected static final double PROBABILITY_OF_SURVIVING_SAD = 0.08;
+    protected static final double LETHALITY_OF_SAD = 0.05;
     
-    protected static final double PROBABILITY_OF_SAD = 0.1;
+    protected int foodLevel;
     
-    protected static final double PROBABILITY_OF_SAD_SPREAD = 0.2;
-    
-    protected static final double LETHALITY_OF_SAD = 0.08;
-    
-    protected static final Random rand = Randomizer.getRandom();
-    
-    // Whether the animal is alive or not.
-    protected boolean alive;
-    // The animal's field.
-    protected Field field;
-    // The animal's position in the field.
-    protected Location location;
-    
-    protected Weather weather;
-    
-    protected int age;
-    
-    protected boolean hasSAD;
+    protected boolean hasSAD = false;
     
     /**
-     * Create a new animal at location in field.
+     * Creates a new animal and places it in a field.
      * 
-     * @param field The field currently occupied.
      * @param location The location within the field.
+     * @param field The field currently occupied.
+     * @param weather The weather affecting the animal.
      */
-    public Animal(Field field, Location location, Weather weather)
+    public Animal(Location location, Field field, Weather weather) 
     {
-        alive = true;
-        this.field = field;
-        this.weather = weather;
-        setLocation(location);
+        super(location, field, weather);
     }
     
-    /**
-     * Make this animal act - that is: make it do
-     * whatever it wants/needs to do.
-     * @param newAnimals A list to receive newly born animals.
-     */
-    abstract public void act(List<Animal> newAnimals);
+    // Methods for getting the constants of the subclasses (and ensuring they have those constants).
+    protected abstract double getBREEDING_PROBABILITY();
+    protected abstract int getMAX_OFFSPRING();
+    protected abstract int getDEFAULT_FOOD_LEVEL();
     
-    /**
-     * Check whether the animal is alive or not.
-     * @return true if the animal is still alive.
-     */
-    protected boolean isAlive()
-    {
-        return alive;
-    }
+    protected abstract Location findFood();
 
     /**
-     * Indicate that the animal is no longer alive.
-     * It is removed from the field.
+     * enables the animal classes to move,eat,infect and breed
      */
-    protected void setDead()
+    protected void move()
     {
-        alive = false;
-        if(location != null) {
-            field.clear(location);
-            location = null;
-            field = null;
+        Location newLocation = findFood();
+        if(newLocation == null) { 
+            // No food found - try to move to a free location.
+            newLocation = getField().freeAdjacentLocation(getLocation());
+        }
+        // See if it was possible to move.
+        if(newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
+            // Overcrowding.
+            setDead();
         }
     }
-
-    /**
-     * Return the animal's location.
-     * @return The animal's location.
-     */
-    protected Location getLocation()
-    {
-        return location;
-    }
     
     /**
-     * Place the animal at the new location in the given field.
-     * @param newLocation The animal's new location.
+     * Make this fox more hungry. This could result in the fox's death.
      */
-    protected void setLocation(Location newLocation)
+    protected void incrementHunger()
     {
-        if(location != null) {
-            field.clear(location);
+        foodLevel--;
+        if(foodLevel <= 0) {
+            setDead();
         }
-        location = newLocation;
-        field.place(this, newLocation);
     }
     
     /**
-     * Return the animal's field.
-     * @return The animal's field.
+     * Generate a number representing the number of births,
+     * if it can breed.
+     * @return The number of births (may be zero).
      */
-    protected Field getField()
+    protected int breed()
     {
-        return field;
+        int births = 0;
+        if(rand.nextDouble() <= getBREEDING_PROBABILITY()) {
+            births = rand.nextInt(getMAX_OFFSPRING()) + 1;
+        }
+        return births;
     }
     
-    /**
-     * Check to see if it catches S.A.D.
-     */
-    protected void getInfected()
+    protected void developSAD()
     {
-        if (rand.nextDouble() <= PROBABILITY_OF_SAD) {
+        if (rand.nextDouble() <= PROBABILITY_OF_SAD)
             hasSAD = true;
-        }
     }
     
-    /**
-     * Recieves infection
-     */
-    protected void makeSAD()
+    protected void spreadSAD(Animal currentAnimal)
+    {
+        if (hasSAD) {
+            List<Location> potentialSpreads = field.getFullAdjacentLocations(location);
+            for (Location potentialSpread : potentialSpreads) {
+                Object spread = field.getObjectAt(potentialSpread); 
+                // Checks to see if the object in the adjacent location is of the same class.
+                if (spread.getClass() == currentAnimal.getClass()) {
+                    Animal castedSpread = (Animal) spread;
+                    if(rand.nextDouble() <= PROBABILITY_OF_SPREADING_SAD) {
+                        castedSpread.infect();
+                    }
+                }
+            }
+        }
+            
+    }
+    
+    protected void infect()
     {
         hasSAD = true;
     }
     
+    protected void fightSAD()
+    {
+        if (hasSAD) {
+            if (rand.nextDouble() <= LETHALITY_OF_SAD) {
+               
+                setDead();
+            }
+            if (rand.nextDouble() <= PROBABILITY_OF_SURVIVING_SAD) {
+                
+                hasSAD = false; 
+            }
+        }
+    }
 }
