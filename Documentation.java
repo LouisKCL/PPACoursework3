@@ -21,34 +21,38 @@ public class Documentation extends Plant
     private static final int EDIBLE_AGE = 20;
     // The amount of food an animal gets when eating a documentation plant.
     private static final int FOOD_VALUE = 10;
-    //yeas
+    /**
+     * this is the constructor of the class,it initializes the plant and puts it in a field
+     */
     public Documentation(Field field, Location location, Weather weather)
     {
         super(field,location,weather);
     }
-    
+     /**
+     * All the methods below  are used for returning the specific constants to the superclass when needed
+     */
     public int getMAX_AGE()
-    {
-        return MAX_AGE;
-    }
+        {
+            return MAX_AGE;
+        }
     public int getMAX_SEEDLINGS()
-    {
-        return MAX_SEEDLINGS;
-    }
+        {
+            return MAX_SEEDLINGS;
+        }
     public int getSEEDING_AGE()
-    {
-        return SEEDING_AGE;
-    }
+        {
+            return SEEDING_AGE;
+        }
     public int getEDIBLE_AGE()
-    {
-        return EDIBLE_AGE;
-    }
+        {
+            return EDIBLE_AGE;
+        }
     public int getFOOD_VALUE()
-    {
-        return FOOD_VALUE;
-    }
+        {
+            return FOOD_VALUE;
+        }
     public double getSEEDING_PROBABILITY()
-    {
-        return SEEDING_PROBABILITY;
-    }
+        {
+            return SEEDING_PROBABILITY;
+        }
 }

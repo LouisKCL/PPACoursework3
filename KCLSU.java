@@ -3,16 +3,16 @@ import java.util.Iterator;
 
 /**
  * A simple model of a KCLSU.
- * KCLSU age, move, eat admin, and die.
+ * KCLSU age, move, eat admin, and die,and they can get a disease
  * 
- * @author David J. Barnes and Michael Kölling
+ * @author David J. Barnes and Michael Kölling,Lousi Mellac,Andrei Cinca
  * @version 2016.02.29 (2)
  */
 public class KCLSU extends Animal
 {
     // Characteristics shared by all KCLSUes (class variables).
     
-    // The age to which a KCLSU can live (90 days).
+    // The age to which a KCLSU can live 
     private static final int MAX_AGE = 70 * 24;
     // The likelihood of a KCLSU breeding.
     private static final double BREEDING_PROBABILITY = 0.06;
@@ -44,6 +44,9 @@ public class KCLSU extends Animal
         }
     }
     
+    /**
+     * these methods are used for providing the superclass with the specific constants of the subclass
+     */
     public int getMAX_AGE()
     {
         return MAX_AGE;
@@ -66,9 +69,7 @@ public class KCLSU extends Animal
     }
     
     /**
-     * This is what the KCLSU does most of the time: it hunts for
-     * rabbits. In the process, it might breed, die of hunger,
-     * or die of old age.
+     * The KCLSU eats,moves,breeds,can die of old age or hunger,or from a disease
      * @param field The field currently occupied.
      * @param newKCLSUes A list to return newly born KCLSUes.
      */
@@ -88,8 +89,8 @@ public class KCLSU extends Animal
     }
     
     /**
-     * Look for rabbits adjacent to the current location.
-     * Only the first live rabbit is eaten.
+     * Look for admins adjacent to the current location.
+     * Only the first live admin is eaten.
      * @return Where food was found, or null if it wasn't.
      */
     protected Location findFood()

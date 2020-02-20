@@ -6,7 +6,7 @@ import java.awt.Color;
 
 /**
  * A simple predator-prey simulator based on a rectangular field
- * containing students, lecturers, KCLSU, admin staff, and TAs.
+ * containing students, lecturers, KCLSU, admin staff, TAs, and plants.
  * 
  * @author Louis Mellac, Andrei Cinca, David J. Barnes, and Michael Kölling
  * @version 2020.02.18

@@ -2,18 +2,18 @@ import java.util.List;
 import java.util.Iterator;
 
 /**
- * A simple model of a rabbit.
- * Rabbits age, move, breed, and die.
- * We will all die eventually.
+ * This is class student
+ * they eat grades(plant),die,breed,move,age
+ * they re being eaten by lecturers
  * 
  * @author David J. Barnes, Michael Kölling, Louis Mellac, Andrei Cinca
  * @version 2020.02.11
  */
 public class Student extends GenderedAnimal
 {
-    // Characteristics shared by all rabbits (class variables).
+    // Characteristics shared by all students(class variables).
 
-    // Maximum age of a student (100 days).
+    // Maximum age of a student .
     private static final int MAX_AGE = 40 * 24;
     // The likelihood of a student breeding.
     private static final double BREEDING_PROBABILITY = 0.1;
@@ -25,10 +25,10 @@ public class Student extends GenderedAnimal
     private static final int DEFAULT_FOOD_LEVEL = 30;
 
     /**
-     * Create a new rabbit. A rabbit may be created with age
+     * Create a new student. A student may be created with age
      * zero (a new born) or with a random age.
      * 
-     * @param randomAge If true, the rabbit will have a random age.
+     * @param randomAge If true, the student will have a random age.
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
@@ -46,6 +46,9 @@ public class Student extends GenderedAnimal
         }
     }
     
+    /**
+     * These methods provide the constants specific to this class,in the superclass 
+     */
     public int getMAX_AGE()
     {
         return MAX_AGE;
@@ -68,9 +71,9 @@ public class Student extends GenderedAnimal
     } 
     
     /**
-     * This is what the rabbit does most of the time - it runs 
-     * around. Sometimes it will breed or die of old age.
-     * @param newRabbits A list to return newly born rabbits.
+     * This is how the student acts.They can eat if they find food around them
+     * they can breed,die,get a disease,age
+     * @param newRabbits A list to return newly born students.
      */
     public void act(List<Entity> newStudents)
     {
@@ -90,8 +93,8 @@ public class Student extends GenderedAnimal
     }
     
     /**
-     * Look for rabbits adjacent to the current location.
-     * Only the first live rabbit is eaten.
+     * Look for grades adjacent to the current location.
+     * Only the first live grade is eaten.
      * @return Where food was found, or null if it wasn't.
      */
     protected Location findFood()
@@ -116,9 +119,9 @@ public class Student extends GenderedAnimal
     }
     
     /**
-     * Check whether or not this rabbit is to give birth at this step.
+     * Check whether or not this student is to give birth at this step.
      * New births will be made into free adjacent locations.
-     * @param newRabbits A list to return newly born rabbits.
+     * @param newStudents A list to return newly born students.
      */
     protected void giveBirth(List<Entity> newStudents)
     {

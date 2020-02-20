@@ -2,8 +2,8 @@ import java.util.List;
 import java.util.Iterator;
 
 /**
- * A simple model of a fox.
- * Foxes age, move, eat rabbits, and die.
+ * This is class lecturer
+ * they eat,breed,die of old age or hunger
  * 
  * @author David J. Barnes and Michael Kölling
  * @version 2016.02.29 (2)
@@ -24,10 +24,10 @@ public class Lecturer extends GenderedAnimal
     private static final int FOOD_VALUE = 20;
 
     /**
-     * Create a fox. A fox can be created as a new born (age zero
+     * Create a lecturer. A lecturer can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
      * 
-     * @param randomAge If true, the fox will have random age and hunger level.
+     * @param randomAge If true, the lecturer will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
@@ -45,8 +45,8 @@ public class Lecturer extends GenderedAnimal
     }
     
     /**
-     * Look for rabbits adjacent to the current location.
-     * Only the first live rabbit is eaten.
+     * Look for students adjacent to the current location.
+     * Only the first live student is eaten.
      * @return Where food was found, or null if it wasn't.
      */
     protected Location findFood()
@@ -71,11 +71,11 @@ public class Lecturer extends GenderedAnimal
     }
     
     /**
-     * This is what the fox does most of the time: it hunts for
-     * rabbits. In the process, it might breed, die of hunger,
+     * This is what the lecturer does most of the time: it hunts for
+     * students. In the process, it might breed, die of hunger,
      * or die of old age.
      * @param field The field currently occupied.
-     * @param newFoxes A list to return newly born foxes.
+     * @param newLecturers A list to return newly born students.
      */
     public void act(List<Entity> newLecturer)
     {
@@ -92,9 +92,9 @@ public class Lecturer extends GenderedAnimal
     }
     
     /**
-     * Check whether or not this fox is to give birth at this step.
+     * Check whether or not this lecturers is to give birth at this step.
      * New births will be made into free adjacent locations.
-     * @param newLecturers A list to return newly born foxes.
+     * @param newLecturers A list to return newly born lecturers.
      */
     protected void giveBirth(List<Entity> newLecturers)
     {
@@ -110,6 +110,9 @@ public class Lecturer extends GenderedAnimal
         }
     }
     
+     /**
+     * these methods are used for providing the superclass with the specific constants of the subclass
+     */
     public int getMAX_AGE()
     {
         return MAX_AGE;

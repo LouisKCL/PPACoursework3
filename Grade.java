@@ -1,10 +1,10 @@
 import java.util.List;
 import java.util.Random;
 /**
- * Write a description of class Grades here.
+ * This is the class for Grades(a type of class Plant)
  *
- * @author (your name)
- * @version (a version number or a date)
+ * @author Louis Mellac, Andrei Cinca
+ * 
  */
 public class Grade extends Plant
 {
@@ -32,6 +32,9 @@ public class Grade extends Plant
         super(field,location,weather);
     }
     
+    /**
+     * All of the methods below ar being used to return constants to the superclass
+     */
     public int getMAX_AGE()
     {
         return MAX_AGE;

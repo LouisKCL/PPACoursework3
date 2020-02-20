@@ -3,9 +3,9 @@ import java.util.Iterator;
 
 /**
  * A simple model of a admin.
- * admines age, move, eat rabbits, and die.
+ * admines age, move, eat TAs, and die.
  * 
- * @author David J. Barnes and Michael Kölling
+ * @author David J. Barnes and Michael Kölling,Louis Mellac, Andrei Cinca
  * @version 2016.02.29 (2)
  */
 public class Admin extends Animal
@@ -44,6 +44,9 @@ public class Admin extends Animal
         }
     }
     
+    /**
+     * these methods are used for providing the superclass with the specific constants of the subclass
+     */
     public int getMAX_AGE()
     {
         return MAX_AGE;
@@ -68,9 +71,9 @@ public class Admin extends Animal
     /**
      * This is what the admin does most of the time: it hunts for
      * rabbits. In the process, it might breed, die of hunger,
-     * or die of old age.
+     * or die of old age
      * @param field The field currently occupied.
-     * @param newadmines A list to return newly born admines.
+     * @param newadmines A list to return newly born admins.
      */
     public void act(List<Entity> newAdmin)
     {
@@ -87,8 +90,8 @@ public class Admin extends Animal
     }
     
     /**
-     * Look for rabbits adjacent to the current location.
-     * Only the first live rabbit is eaten.
+     * Look for TAs adjacent to the current location.
+     * Only the first live TA is eaten.
      * @return Where food was found, or null if it wasn't.
      */
     protected Location findFood()

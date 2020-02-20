@@ -3,7 +3,7 @@ import java.util.Iterator;
 
 /**
  * A model of a Teaching Assistant (TA)
- * TAs 
+ * TAs eat plants,die of hunger or old ages,move and breed
  * 
  * @author David J. Barnes, Michael Kölling, Louis Mellac, Andrei Cinca
  * @version 2020.02.11
@@ -22,10 +22,10 @@ public class TA extends GenderedAnimal
     private static final int DEFAULT_FOOD_LEVEL = 25;
 
     /**
-     * Create a new rabbit. A rabbit may be created with age
+     * Create a new rabbit. A TA may be created with age
      * zero (a new born) or with a random age.
      * 
-     * @param randomAge If true, the rabbit will have a random age.
+     * @param randomAge If true, the TA will have a random age.
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
@@ -43,6 +43,9 @@ public class TA extends GenderedAnimal
         }
     }
     
+    /**
+     * these methods are used for providing the superclass with the specific constants of the subclass
+     */
     public int getMAX_AGE()
     {
         return MAX_AGE;
@@ -65,7 +68,7 @@ public class TA extends GenderedAnimal
     }
         
     /**
-     * Look for rabbits adjacent to the current location.
+     * Look for TA adjacent to the current location.
      * Only the first live rabbit is eaten.
      * @return Where food was found, or null if it wasn't.
      */
@@ -91,9 +94,8 @@ public class TA extends GenderedAnimal
     }
     
     /**
-     * This is what the rabbit does most of the time - it runs 
-     * around. Sometimes it will breed or die of old age.
-     * @param newRabbits A list to return newly born rabbits.
+     * TAs can move,breed,eat,die of old age or hunger
+     * @param newTAs A list to return newly born TA.
      */
     public void act(List<Entity> newTA)
     {
@@ -110,9 +112,9 @@ public class TA extends GenderedAnimal
     }
 
     /**
-     * Check whether or not this rabbit is to give birth at this step.
+     * Check whether or not this TA is to give birth at this step.
      * New births will be made into free adjacent locations.
-     * @param newRabbits A list to return newly born rabbits.
+     * @param newTAs A list to return newly born TAs.
      */
     protected void giveBirth(List<Entity> newTA)
     {

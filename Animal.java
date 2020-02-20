@@ -61,7 +61,7 @@ public abstract class Animal extends Entity
     }
     
     /**
-     * Make this fox more hungry. This could result in the fox's death.
+     * Make this animal more hungry. This could result in the animal's death.
      */
     protected void incrementHunger()
     {
@@ -85,12 +85,19 @@ public abstract class Animal extends Entity
         return births;
     }
     
+    /**
+     * this method determines whether or not the current animal will catch the disease
+     */
     protected void developSAD()
     {
         if (rand.nextDouble() <= PROBABILITY_OF_SAD)
             hasSAD = true;
     }
     
+    /**
+     * This method enables the infected animals to spread the disease to other animals(of the same class) around them.
+     * There is a probability for the spreading as well
+     */
     protected void spreadSAD(Animal currentAnimal)
     {
         if (hasSAD) {
@@ -109,11 +116,17 @@ public abstract class Animal extends Entity
             
     }
     
+    /**
+     * this method changes the value of the infected state to true
+     */
     protected void infect()
     {
         hasSAD = true;
     }
     
+    /**
+     * This method checks whether or not the infected animal dies or not.If they don't die, there is a chance that they can be cured.
+     */
     protected void fightSAD()
     {
         if (hasSAD) {
