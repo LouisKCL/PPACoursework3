@@ -21,7 +21,7 @@ public class Documentation extends Plant
     private static final int EDIBLE_AGE = 20;
     // The amount of food an animal gets when eating a documentation plant.
     private static final int FOOD_VALUE = 10;
-
+    //yeas
     public Documentation(Field field, Location location, Weather weather)
     {
         super(field,location,weather);
