@@ -37,7 +37,7 @@ public class SimulatorView extends JFrame
      * @param height The simulation's height.
      * @param width  The simulation's width.
      */
-    public SimulatorView(int height, int width)
+    public SimulatorView(int height, int width, Simulator simulator)
     {
         stats = new FieldStats();
         colors = new LinkedHashMap<>();
@@ -47,6 +47,19 @@ public class SimulatorView extends JFrame
         infoLabel = new JLabel("  ", JLabel.CENTER);
         population = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
         
+        // Create the button
+        JButton stopButton = new JButton("Stop");
+        // Add an ActionListener to the button which listens for any action.
+        stopButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e) 
+            {
+                // If the button is pressed, set stopRequested in simulator to true.
+                if (!simulator.getStopRequested())
+                    simulator.setStopRequested(true);
+            }
+        });
+            
         setLocation(100, 50);
         
         fieldView = new FieldView(height, width);
@@ -54,8 +67,9 @@ public class SimulatorView extends JFrame
         Container contents = getContentPane();
         
         JPanel infoPane = new JPanel(new BorderLayout());
-            infoPane.add(stepLabel, BorderLayout.WEST);
-            infoPane.add(infoLabel, BorderLayout.CENTER);
+        infoPane.add(stepLabel, BorderLayout.WEST);
+        infoPane.add(infoLabel, BorderLayout.CENTER);
+        infoPane.add(stopButton, BorderLayout.EAST);
         contents.add(infoPane, BorderLayout.NORTH);
         contents.add(fieldView, BorderLayout.CENTER);
         contents.add(population, BorderLayout.SOUTH);

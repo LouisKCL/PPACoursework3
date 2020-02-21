@@ -44,6 +44,7 @@ public class Simulator
     // The current state of the weather.
     private Weather weather;
     
+    private boolean stopRequested = false;
     
     /**
      * Construct a simulation field with default size.
@@ -72,7 +73,7 @@ public class Simulator
         weather = new Weather();
 
         // Create a view of the state of each location in the field.
-        view = new SimulatorView(depth, width);
+        view = new SimulatorView(depth, width, this);
         view.setColor(Student.class, Color.ORANGE);
         view.setColor(Lecturer.class, Color.BLUE);
         view.setColor(Admin.class, Color.CYAN);
@@ -113,23 +114,26 @@ public class Simulator
      */
     public void simulateOneStep()
     {
-        step++;
-        // Updates the weather.
-        weather.updateWeather(step);
-
-        // Provide space for newborn entities.
-        List<Entity> newEntities = new ArrayList<>();
-        // Let all entities act.
-        for(Iterator<Entity> it = entities.iterator(); it.hasNext(); ) {
-            Entity entity = it.next();
-            entity.act(newEntities);
-            if(!entity.isAlive()) {
-                it.remove();
-            }
-        }     
-        // Add the newly born entities to the main lists.
-        entities.addAll(newEntities);
-        view.showStatus(step, field);
+        while (!stopRequested)
+        {
+            step++;
+            // Updates the weather.
+            weather.updateWeather(step);
+    
+            // Provide space for newborn entities.
+            List<Entity> newEntities = new ArrayList<>();
+            // Let all entities act.
+            for(Iterator<Entity> it = entities.iterator(); it.hasNext(); ) {
+                Entity entity = it.next();
+                entity.act(newEntities);
+                if(!entity.isAlive()) {
+                    it.remove();
+                }
+            }     
+            // Add the newly born entities to the main lists.
+            entities.addAll(newEntities);
+            view.showStatus(step, field);
+        }
     }
         
     /**
@@ -206,5 +210,15 @@ public class Simulator
         catch (InterruptedException ie) {
             // wake up
         }
+    }
+    
+    public boolean getStopRequested()
+    {
+        return stopRequested;
+    }
+    
+    public void setStopRequested(boolean value)
+    {
+        stopRequested = value;
     }
 }
