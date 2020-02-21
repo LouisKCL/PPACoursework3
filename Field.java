@@ -19,7 +19,7 @@ public class Field
     // The depth and width of the field.
     private int depth, width;
     // Storage for the animals.
-    private Object[][] field;
+    private Entity[][] field;
 
     /**
      * Represent a field of the given dimensions.
@@ -30,7 +30,7 @@ public class Field
     {
         this.depth = depth;
         this.width = width;
-        field = new Object[depth][width];
+        field = new Entity[depth][width];
     }
     
     /**
@@ -62,9 +62,9 @@ public class Field
      * @param row Row coordinate of the location.
      * @param col Column coordinate of the location.
      */
-    public void place(Object animal, int row, int col)
+    public void place(Entity entity, int row, int col)
     {
-        place(animal, new Location(row, col));
+        place(entity, new Location(row, col));
     }
     
     /**
@@ -74,9 +74,9 @@ public class Field
      * @param animal The animal to be placed.
      * @param location Where to place the animal.
      */
-    public void place(Object animal, Location location)
+    public void place(Entity entity, Location location)
     {
-        field[location.getRow()][location.getCol()] = animal;
+        field[location.getRow()][location.getCol()] = entity;
     }
     
     /**
@@ -84,9 +84,9 @@ public class Field
      * @param location Where in the field.
      * @return The animal at the given location, or null if there is none.
      */
-    public Object getObjectAt(Location location)
+    public Entity getEntityAt(Location location)
     {
-        return getObjectAt(location.getRow(), location.getCol());
+        return getEntityAt(location.getRow(), location.getCol());
     }
     
     /**
@@ -95,7 +95,7 @@ public class Field
      * @param col The desired column.
      * @return The animal at the given location, or null if there is none.
      */
-    public Object getObjectAt(int row, int col)
+    public Entity getEntityAt(int row, int col)
     {
         return field[row][col];
     }
@@ -124,7 +124,7 @@ public class Field
         List<Location> free = new LinkedList<>();
         List<Location> adjacent = adjacentLocations(location);
         for(Location next : adjacent) {
-            if(getObjectAt(next) == null) {
+            if(getEntityAt(next) == null) {
                 free.add(next);
             }
         }
@@ -136,7 +136,7 @@ public class Field
         List<Location> full = new LinkedList<>();
         List<Location> adjacent = adjacentLocations(location);
         for(Location next : adjacent) {
-            if(getObjectAt(next) != null) {
+            if(getEntityAt(next) != null) {
                 full.add(next);
             }
         }

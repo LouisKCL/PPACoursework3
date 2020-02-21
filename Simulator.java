@@ -6,7 +6,7 @@ import java.awt.Color;
 
 /**
  * A simple predator-prey simulator based on a rectangular field
- * containing students, lecturers, KCLSU, admin staff, and TAs.
+ * containing students, lecturers, KCLSU, admin staff, TAs, and plants (grades and documentation).
  * 
  * @author Louis Mellac, Andrei Cinca, David J. Barnes, and Michael Kölling
  * @version 2020.02.18
@@ -21,17 +21,17 @@ public class Simulator
     // The probability that a lecturer will be created in any given grid position.
     private static final double LECTURER_CREATION_PROBABILITY = 0.03;
     // The probability that a student will be created in any given grid position.
-    private static final double STUDENT_CREATION_PROBABILITY = 0.05;
+    private static final double STUDENT_CREATION_PROBABILITY = 0.07;
     // The probability that an admin will be created in any given grid position.
     private static final double ADMIN_CREATION_PROBABILITY = 0.04;
     // The probability that a KCLSU will be created in any given grid position.
     private static final double KCLSU_CREATION_PROBABILITY = 0.009;
     // The probability that a TA will be created in any given grid position.
-    private static final double TA_CREATION_PROBABILITY = 0.05;
+    private static final double TA_CREATION_PROBABILITY = 0.08;
     // The probability that a grade will be created in any given grid position.
-    private static final double GRADE_CREATION_PROBABILITY = 0.08;
+    private static final double GRADE_CREATION_PROBABILITY = 0.007;
     // The probability that a documentation will be created in any given grid position.
-    private static final double DOCUMENTATION_CREATION_PROBABILITY = 0.08;
+    private static final double DOCUMENTATION_CREATION_PROBABILITY = 0.009;
 
     // List of entities in the field.
     private List<Entity> entities;
@@ -43,7 +43,7 @@ public class Simulator
     private SimulatorView view;
     // The current state of the weather.
     private Weather weather;
-    
+    // Boolean to check if the stop button has been pressed.
     private boolean stopRequested = false;
     
     /**
@@ -92,7 +92,7 @@ public class Simulator
      */
     public void runLongSimulation()
     {
-        simulate(1000);
+        simulate(2000);
     }
     
     /**
@@ -103,8 +103,10 @@ public class Simulator
     public void simulate(int numSteps)
     {
         for(int step = 1; step <= numSteps && view.isViable(field); step++) {
-            simulateOneStep();
-            //delay(60);   // uncomment this to run more slowly
+            if (!stopRequested) {
+                simulateOneStep();
+                //delay(60);   // uncomment this to run more slowly
+            }
         }
     }
     
@@ -114,26 +116,22 @@ public class Simulator
      */
     public void simulateOneStep()
     {
-        while (!stopRequested)
-        {
-            step++;
-            // Updates the weather.
-            weather.updateWeather(step);
-    
-            // Provide space for newborn entities.
-            List<Entity> newEntities = new ArrayList<>();
-            // Let all entities act.
-            for(Iterator<Entity> it = entities.iterator(); it.hasNext(); ) {
-                Entity entity = it.next();
-                entity.act(newEntities);
-                if(!entity.isAlive()) {
-                    it.remove();
-                }
-            }     
-            // Add the newly born entities to the main lists.
-            entities.addAll(newEntities);
-            view.showStatus(step, field);
-        }
+        step++;
+        weather.updateWeather(step);
+        
+        // Provide space for newly made entities.
+        List<Entity> newEntities = new ArrayList<>();
+        // Make all entities act and remove dead entities from the list.
+        for(Iterator<Entity> it = entities.iterator(); it.hasNext(); ) {
+            Entity entity = it.next();
+            entity.act(newEntities);
+            if(!entity.isAlive()) {
+                it.remove();
+            }
+        }     
+        // Add the newly born entities to the main list.
+        entities.addAll(newEntities);
+        view.showStatus(step, field);
     }
         
     /**
@@ -144,6 +142,7 @@ public class Simulator
         step = 0;
         entities.clear();
         populate();
+        stopRequested = false;
         
         // Show the starting state in the view.
         view.showStatus(step, field);
@@ -212,11 +211,18 @@ public class Simulator
         }
     }
     
+    /**
+     * @return true if a stop has been requested is true.
+     */
     public boolean getStopRequested()
     {
         return stopRequested;
     }
     
+    /**
+     * Allows changing whether or not a stop has been requested.
+     * @param value The boolean value to set stopRequested to.
+     */
     public void setStopRequested(boolean value)
     {
         stopRequested = value;

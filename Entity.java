@@ -2,7 +2,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * A class representing the shared characteristics of all entities (plants and entitys)
+ * A class representing the shared characteristics of all entities (plants and animals)
  * in the simulation.
  * 
  * @author Louis Mellac, Andrei Cinca, David J. Barnes, and Michael Kölling
@@ -37,10 +37,6 @@ public abstract class Entity
         setLocation(location);
     }
     
-    // Methods for getting the constants of the subclasses (and ensuring they have those constants).
-    abstract protected int getMAX_AGE();
-    abstract protected int getFOOD_VALUE();
-    
     /**
      * Makes this entity act.
      * @param newEntities A list to receive newly made entities.
@@ -54,6 +50,11 @@ public abstract class Entity
     {
         return alive;
     }
+    
+    /**
+     * @return true if the entity can be eaten.
+     */
+    abstract public boolean isEdible();
 
     /**
      * Indicates that the entity is no longer alive.
@@ -108,4 +109,8 @@ public abstract class Entity
             setDead();
         }
     }
+    
+    // Methods for getting the constants of the subclasses.
+    abstract protected int getMAX_AGE();
+    abstract protected int getFOOD_VALUE();
 }

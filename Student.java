@@ -2,21 +2,21 @@ import java.util.List;
 import java.util.Iterator;
 
 /**
- * A simple model of a rabbit.
- * Rabbits age, move, breed, and die.
- * We will all die eventually.
+ * This is class student
+ * they eat grades(plant),die,breed,move,age
+ * they re being eaten by lecturers
  * 
  * @author David J. Barnes, Michael Kölling, Louis Mellac, Andrei Cinca
  * @version 2020.02.11
  */
 public class Student extends GenderedAnimal
 {
-    // Characteristics shared by all rabbits (class variables).
+    // Characteristics shared by all students(class variables).
 
-    // Maximum age of a student (100 days).
+    // Maximum age of a student .
     private static final int MAX_AGE = 40 * 24;
     // The likelihood of a student breeding.
-    private static final double BREEDING_PROBABILITY = 0.1;
+    private static final double BREEDING_PROBABILITY = 0.04;
     // The maximum number of births.
     private static final int MAX_OFFSPRING = 5;
     // Food value of a student
@@ -25,10 +25,10 @@ public class Student extends GenderedAnimal
     private static final int DEFAULT_FOOD_LEVEL = 30;
 
     /**
-     * Create a new rabbit. A rabbit may be created with age
+     * Create a new student. A student may be created with age
      * zero (a new born) or with a random age.
      * 
-     * @param randomAge If true, the rabbit will have a random age.
+     * @param randomAge If true, the student will have a random age.
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
@@ -46,31 +46,10 @@ public class Student extends GenderedAnimal
         }
     }
     
-    public int getMAX_AGE()
-    {
-        return MAX_AGE;
-    }
-    public double getBREEDING_PROBABILITY()
-    {
-        return BREEDING_PROBABILITY;
-    }
-    public int getMAX_OFFSPRING()
-    {
-        return MAX_AGE;
-    }
-    public int getFOOD_VALUE()
-    {
-        return FOOD_VALUE;
-    }
-    public int getDEFAULT_FOOD_LEVEL()
-    {
-        return DEFAULT_FOOD_LEVEL;
-    } 
-    
     /**
-     * This is what the rabbit does most of the time - it runs 
-     * around. Sometimes it will breed or die of old age.
-     * @param newRabbits A list to return newly born rabbits.
+     * This is how the student acts.They can eat if they find food around them
+     * they can breed,die,get a disease,age
+     * @param newRabbits A list to return newly born students.
      */
     public void act(List<Entity> newStudents)
     {
@@ -90,48 +69,43 @@ public class Student extends GenderedAnimal
     }
     
     /**
-     * Look for rabbits adjacent to the current location.
-     * Only the first live rabbit is eaten.
-     * @return Where food was found, or null if it wasn't.
+     * Creates a new student but returns it in an Entity variable.
+     * @param randomAge If true, the student will have a random age.
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param gender Whether or not this is a female.
+     * @param weather The weather affecting this student's behaviour.
      */
-    protected Location findFood()
+    protected Entity buildGenderedOffspring(boolean randomAge, Field field, Location loc, boolean gender, Weather weather)
     {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object food = field.getObjectAt(where);
-            if(food instanceof Grade) {
-                Grade grade = (Grade) food;
-                if(grade.isAlive() && grade.isEdible()) { 
-                    grade.setDead();
-                    if (foodLevel < MAX_FOOD_LEVEL)
-                        foodLevel = foodLevel + grade.getFOOD_VALUE();
-                    return where;
-                }
-            }
-        }
-        return null;
+        return new Student(randomAge, field, loc, gender, weather);
     }
     
-    /**
-     * Check whether or not this rabbit is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newRabbits A list to return newly born rabbits.
-     */
-    protected void giveBirth(List<Entity> newStudents)
+    public Class<?>[] getFoodSources()
     {
-        // New rabbits are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = genderedBreed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Student young = new Student(false, field, loc, rand.nextBoolean(), weather);
-            newStudents.add(young);
-        }
+        Class<?>[] foodSource = {Grade.class};
+        return foodSource;
     }
-
+    
+    // These methods return the constants specific to this class to any superclass.
+    /**
+     * @return the maximum age a student can have.
+     */
+    protected int getMAX_AGE() {return MAX_AGE;}
+    /**
+     * @return the probabbility that two students breed.
+     */
+    protected double getBREEDING_PROBABILITY() {return BREEDING_PROBABILITY;}
+    /**
+     * @return the maximum number of offspring a student can have.
+     */
+    protected int getMAX_OFFSPRING() {return MAX_AGE;}
+    /**
+     * @return the amount of food an animal would get from eating a student.
+     */
+    protected int getFOOD_VALUE() {return FOOD_VALUE;}
+    /**
+     * @return the default starting food level for a student.
+     */
+    protected int getDEFAULT_FOOD_LEVEL() {return DEFAULT_FOOD_LEVEL;}
 }

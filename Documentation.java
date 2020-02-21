@@ -2,8 +2,9 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * This class describes represents the characteristics of a documentation plant.
- *
+ * This is the class for Documentation (a type of plant).
+ * It currently only holds and returns constants specific to the Documentation plant.
+ * 
  * @author Louis Mellac and Andrei Cinca
  * @version 2020.02.20
  */
@@ -12,7 +13,7 @@ public class Documentation extends Plant
     // The maximum age of a documentation plant.
     private static final int MAX_AGE = 35* 24;
     // The likelihood of a documentation plant spreading successfully.
-    private static final double SEEDING_PROBABILITY = 0.04;
+    private static final double SEEDING_PROBABILITY = 0.025;
     // The maximum number of new seeds a documentation plant can make.
     private static final int MAX_SEEDLINGS = 5;
     // The age at which a documentation plant can start spreading seeds.
@@ -21,34 +22,41 @@ public class Documentation extends Plant
     private static final int EDIBLE_AGE = 20;
     // The amount of food an animal gets when eating a documentation plant.
     private static final int FOOD_VALUE = 10;
-
+    
+    /**
+     * Creates a new documentation plant and places it a field.
+     * @param field The field to place the documentation in.
+     * @param locaion The location in the field to put the documentation.
+     * @param weather The weather affecting the documentation's behaviour.
+     */
     public Documentation(Field field, Location location, Weather weather)
     {
         super(field,location,weather);
     }
-    
-    public int getMAX_AGE()
-    {
-        return MAX_AGE;
-    }
-    public int getMAX_SEEDLINGS()
-    {
-        return MAX_SEEDLINGS;
-    }
-    public int getSEEDING_AGE()
-    {
-        return SEEDING_AGE;
-    }
-    public int getEDIBLE_AGE()
-    {
-        return EDIBLE_AGE;
-    }
-    public int getFOOD_VALUE()
-    {
-        return FOOD_VALUE;
-    }
-    public double getSEEDING_PROBABILITY()
-    {
-        return SEEDING_PROBABILITY;
-    }
+        
+    //Methods used to return constants to superclasses
+    /**
+     * @return the maximum age a documentation plant can have.
+     */
+    protected int getMAX_AGE() {return MAX_AGE;}
+    /**
+     * @return the maximum number of seedlings a documentation plant can create.
+     */
+    protected int getMAX_SEEDLINGS() {return MAX_SEEDLINGS;}
+    /**
+     * @return the age at which a documentation plant can start creating seeds.
+     */
+    protected int getSEEDING_AGE() {return SEEDING_AGE;}
+    /**
+     * @return the age at which a documentation plant is edible.
+     */
+    protected int getEDIBLE_AGE() {return EDIBLE_AGE;}
+    /**
+     * @return the amount of food an animal gets when eating a documentation plant.
+     */
+    protected int getFOOD_VALUE() {return FOOD_VALUE;}
+    /**
+     * @return the probability that a documentation plant will create a successfull seed.
+     */
+    protected double getSEEDING_PROBABILITY() {return SEEDING_PROBABILITY;}
 }

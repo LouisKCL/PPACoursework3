@@ -13,8 +13,7 @@ public abstract class GenderedAnimal extends Animal
     protected boolean isFemale;
     
     /**
-     * Create a new gendered animal at location in field.
-     * 
+     * Create a new gendered animal at a location in a field.
      * @param location The location within the field.
      * @param field The field currently occupied.
      * @param isFemale Whether or not this animal is female.
@@ -25,38 +24,29 @@ public abstract class GenderedAnimal extends Animal
         super(location, field, weather);
         this.isFemale = isFemale;
     }
-    
-    /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    protected int genderedBreed()
+
+    protected Entity buildOffspring(boolean randomAge, Field field, Location loc, Weather weather)
     {
-        int births = 0;
-        if(canBreed(this) && rand.nextDouble() <= getBREEDING_PROBABILITY()) {
-            births = rand.nextInt(getMAX_OFFSPRING()) + 1;
-        }
-        return births;
+        return buildGenderedOffspring(randomAge, field, loc, rand.nextBoolean(), weather);
     }
+    
+    abstract protected Entity buildGenderedOffspring(boolean randomAge, Field field, Location loc, boolean gender, Weather weather);
     
     /**
      * Checks all adjacent locations to see if there is another animal of the same
      * species and of the oposite gender.
-     * 
      * @param currentAnimal The animal to check compatibility with.
      * @return true if the current animal can breed with.
      */
-    protected boolean canBreed(GenderedAnimal currentAnimal)
+    protected boolean canBreed(Animal currentAnimal)
     {
         // Gets the locations of all surrounding animals.
         List<Location> potentialMates = field.getFullAdjacentLocations(location);
         for (Location potentialMate : potentialMates) {
-            Object mate = field.getObjectAt(potentialMate); 
-            // Checks to see if the object in the adjacent location is of the same class.
+            Entity mate = field.getEntityAt(potentialMate); 
+            // Checks to see if this can be mated with (same class and opposite gender).
             if (mate.getClass() == currentAnimal.getClass()) {
                 GenderedAnimal castedMate = (GenderedAnimal) mate;
-                // If it is, check to see if it is female.
                 if (castedMate.isFemale() != isFemale)
                     return true;
             }
@@ -71,5 +61,5 @@ public abstract class GenderedAnimal extends Animal
     protected boolean isFemale()
     {
         return isFemale;
-    }
+    } 
 }

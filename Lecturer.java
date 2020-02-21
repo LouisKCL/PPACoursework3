@@ -1,9 +1,8 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
- * A simple model of a fox.
- * Foxes age, move, eat rabbits, and die.
+ * This is class lecturer
+ * they eat,breed,die of old age or hunger
  * 
  * @author David J. Barnes and Michael Kölling
  * @version 2016.02.29 (2)
@@ -12,22 +11,22 @@ public class Lecturer extends GenderedAnimal
 {
     // Characteristics shared by all foxes (class variables).
     
-    // The age to which a Lecturer can live (200 days).
-    private static final int MAX_AGE = 80 * 24;
+    // The age to which a Lecturer can live.
+    private static final int MAX_AGE = 60 * 24;
     // The likelihood of a fox breeding.
-    private static final double BREEDING_PROBABILITY = 0.08;
+    private static final double BREEDING_PROBABILITY = 0.02;
     // The maximum number of births.
     private static final int MAX_OFFSPRING = 2;
     // Default starting food.
-    private static final int DEFAULT_FOOD_LEVEL = 30;
+    private static final int DEFAULT_FOOD_LEVEL = 40;
     // Food value for lecturers.
-    private static final int FOOD_VALUE = 20;
+    private static final int FOOD_VALUE = 40;
 
     /**
-     * Create a fox. A fox can be created as a new born (age zero
+     * Create a lecturer. A lecturer can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
      * 
-     * @param randomAge If true, the fox will have random age and hunger level.
+     * @param randomAge If true, the lecturer will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
@@ -45,37 +44,11 @@ public class Lecturer extends GenderedAnimal
     }
     
     /**
-     * Look for rabbits adjacent to the current location.
-     * Only the first live rabbit is eaten.
-     * @return Where food was found, or null if it wasn't.
-     */
-    protected Location findFood()
-    {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Student) {
-                Student prey = (Student) animal;
-                if(prey.isAlive()) { 
-                    prey.setDead();
-                    if (foodLevel < MAX_FOOD_LEVEL)
-                        foodLevel = foodLevel + prey.getFOOD_VALUE();
-                    return where;
-                }
-            }
-        }
-        return null;
-    }
-    
-    /**
-     * This is what the fox does most of the time: it hunts for
-     * rabbits. In the process, it might breed, die of hunger,
+     * This is what the lecturer does most of the time: it hunts for
+     * students. In the process, it might breed, die of hunger,
      * or die of old age.
      * @param field The field currently occupied.
-     * @param newFoxes A list to return newly born foxes.
+     * @param newLecturers A list to return newly born students.
      */
     public void act(List<Entity> newLecturer)
     {
@@ -92,42 +65,43 @@ public class Lecturer extends GenderedAnimal
     }
     
     /**
-     * Check whether or not this fox is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newLecturers A list to return newly born foxes.
+     * Creates a new lecturer but returns it in an Entity variable.
+     * @param randomAge If true, the lecturer will have a random age.
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param gender Whether or not this is a female.
+     * @param weather The weather affecting this lecturer's behaviour.
      */
-    protected void giveBirth(List<Entity> newLecturers)
+    protected Entity buildGenderedOffspring(boolean randomAge, Field field, Location loc, boolean gender, Weather weather)
     {
-        // New lecturers are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = genderedBreed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Lecturer young = new Lecturer(false, field, loc, rand.nextBoolean(), weather);
-            newLecturers.add(young);
-        }
+        return new Lecturer(randomAge, field, loc, gender, weather);
     }
     
-    public int getMAX_AGE()
+    public Class<?>[] getFoodSources()
     {
-        return MAX_AGE;
+        Class<?>[] foodSource = {TA.class, Student.class};
+        return foodSource;
     }
-    public double getBREEDING_PROBABILITY()
-    {
-        return BREEDING_PROBABILITY;
-    }
-    public int getMAX_OFFSPRING()
-    {
-        return MAX_AGE;
-    }
-    public int getFOOD_VALUE()
-    {
-        return FOOD_VALUE;
-    }
-    public int getDEFAULT_FOOD_LEVEL()
-    {
-        return DEFAULT_FOOD_LEVEL;
-    }
+    
+    // These methods return the constants specific to this class to any superclass.
+    /**
+     * @return the maximum age a lecturer can have.
+     */
+    protected int getMAX_AGE() {return MAX_AGE;}
+    /**
+     * @return the probabbility that two lecturers breed.
+     */
+    protected double getBREEDING_PROBABILITY() {return BREEDING_PROBABILITY;}
+    /**
+     * @return the maximum number of offspring a lecturer can have.
+     */
+    protected int getMAX_OFFSPRING() {return MAX_AGE;}
+    /**
+     * @return the amount of food an animal would get from eating a lecturer.
+     */
+    protected int getFOOD_VALUE() {return FOOD_VALUE;}
+    /**
+     * @return the default starting food level for a lecturer.
+     */
+    protected int getDEFAULT_FOOD_LEVEL() {return DEFAULT_FOOD_LEVEL;}
 }

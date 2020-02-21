@@ -3,19 +3,19 @@ import java.util.Iterator;
 
 /**
  * A simple model of a KCLSU.
- * KCLSU age, move, eat admin, and die.
+ * KCLSU age, move, eat admin, and die,and they can get a disease
  * 
- * @author David J. Barnes and Michael Kölling
+ * @author David J. Barnes and Michael Kölling,Lousi Mellac,Andrei Cinca
  * @version 2016.02.29 (2)
  */
 public class KCLSU extends Animal
 {
     // Characteristics shared by all KCLSUes (class variables).
     
-    // The age to which a KCLSU can live (90 days).
-    private static final int MAX_AGE = 70 * 24;
+    // The age to which a KCLSU can live 
+    private static final int MAX_AGE = 50 * 24;
     // The likelihood of a KCLSU breeding.
-    private static final double BREEDING_PROBABILITY = 0.06;
+    private static final double BREEDING_PROBABILITY = 0.007;
     // The maximum number of births.
     private static final int MAX_OFFSPRING = 3;
     // Default starting food.
@@ -44,31 +44,8 @@ public class KCLSU extends Animal
         }
     }
     
-    public int getMAX_AGE()
-    {
-        return MAX_AGE;
-    }
-    public double getBREEDING_PROBABILITY()
-    {
-        return BREEDING_PROBABILITY;
-    }
-    public int getMAX_OFFSPRING()
-    {
-        return MAX_AGE;
-    }
-    public int getFOOD_VALUE()
-    {
-        return FOOD_VALUE;
-    }
-    public int getDEFAULT_FOOD_LEVEL()
-    {
-        return DEFAULT_FOOD_LEVEL;
-    }
-    
     /**
-     * This is what the KCLSU does most of the time: it hunts for
-     * rabbits. In the process, it might breed, die of hunger,
-     * or die of old age.
+     * The KCLSU eats,moves,breeds,can die of old age or hunger,or from a disease
      * @param field The field currently occupied.
      * @param newKCLSUes A list to return newly born KCLSUes.
      */
@@ -88,47 +65,48 @@ public class KCLSU extends Animal
     }
     
     /**
-     * Look for rabbits adjacent to the current location.
-     * Only the first live rabbit is eaten.
-     * @return Where food was found, or null if it wasn't.
+     * Creates a new lecturer but returns it in an Entity variable.
+     * @param randomAge If true, the lecturer will have a random age.
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param gender Whether or not this is a female.
+     * @param weather The weather affecting this lecturer's behaviour.
      */
-    protected Location findFood()
+    protected Entity buildOffspring(boolean randomAge, Field field, Location loc, Weather weather)
     {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Admin) {
-                Admin admin = (Admin) animal;
-                if(admin.isAlive()) { 
-                    admin.setDead();
-                    if (foodLevel < MAX_FOOD_LEVEL)
-                        foodLevel = foodLevel + admin.getFOOD_VALUE();
-                    return where;
-                }
-            }
-        }
-        return null;
+        return new KCLSU(randomAge, field, loc, weather);
+    }
+
+    protected boolean canBreed(Animal animal)
+    {
+        return true;
     }
     
-    /**
-     * Check whether or not this KCLSU is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newKCLSUs A list to return newly born KCLSUes.
-     */
-    protected void giveBirth(List<Entity> newKCLSUs)
+    public Class<?>[] getFoodSources()
     {
-        // New KCLSUs are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            KCLSU young = new KCLSU(false, field, loc, weather);
-            newKCLSUs.add(young);
-        }
+        Class<?>[] foodSource = {Admin.class};
+        return foodSource;
     }
+    
+    // These methods return the constants specific to this class to any superclass.
+    /**
+     * @return the maximum age a KCLSU can have.
+     */
+    protected int getMAX_AGE() {return MAX_AGE;}
+    /**
+     * @return the probabbility that two KCLSUs breed.
+     */
+    protected double getBREEDING_PROBABILITY() {return BREEDING_PROBABILITY;}
+    /**
+     * @return the maximum number of offspring a KCLSU can have.
+     */
+    protected int getMAX_OFFSPRING() {return MAX_AGE;}
+    /**
+     * @return the amount of food an animal would get from eating a KCLSU.
+     */
+    protected int getFOOD_VALUE() {return FOOD_VALUE;}
+    /**
+     * @return the default starting food level for a KCLSU.
+     */
+    protected int getDEFAULT_FOOD_LEVEL() {return DEFAULT_FOOD_LEVEL;}
 }

@@ -6,13 +6,12 @@ import java.util.Map;
 
 /**
  * A graphical view of the simulation grid.
- * The view displays a colored rectangle for each location 
- * representing its contents. It uses a default background color.
- * Colors for each type of species can be defined using the
- * setColor method.
+ * The view displays a colored rectangle for each location, representing its contents. 
+ * It uses a default background color.
+ * Colors for each type of species can be defined using the setColor method.
  * 
- * @author David J. Barnes and Michael Kölling
- * @version 2016.02.29
+ * @author Louis Mellac, Andrei Cinca, David J. Barnes, and Michael Kölling
+ * @version 2020.02.21
  */
 public class SimulatorView extends JFrame
 {
@@ -21,10 +20,14 @@ public class SimulatorView extends JFrame
 
     // Color used for objects that have no defined color.
     private static final Color UNKNOWN_COLOR = Color.gray;
-
+    
+    // Label prefixes
     private final String STEP_PREFIX = "Step: ";
     private final String POPULATION_PREFIX = "Population: ";
+
     private JLabel stepLabel, population, infoLabel;
+    private JButton stopButton;
+    
     private FieldView fieldView;
     
     // A map for storing colors for participants in the simulation
@@ -36,6 +39,7 @@ public class SimulatorView extends JFrame
      * Create a view of the given width and height.
      * @param height The simulation's height.
      * @param width  The simulation's width.
+     * @param simulator The simulator to use with this view.
      */
     public SimulatorView(int height, int width, Simulator simulator)
     {
@@ -47,19 +51,19 @@ public class SimulatorView extends JFrame
         infoLabel = new JLabel("  ", JLabel.CENTER);
         population = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
         
-        // Create the button
-        JButton stopButton = new JButton("Stop");
-        // Add an ActionListener to the button which listens for any action.
+        stopButton = new JButton("Stop");
+        // Add an ActionListener to the button to listen for any action.
         stopButton.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e) 
             {
-                // If the button is pressed, set stopRequested in simulator to true.
+                // If the button is pressed, set stopRequested in simulator to true (if it isn't already).
                 if (!simulator.getStopRequested())
                     simulator.setStopRequested(true);
             }
-        });
-            
+        }
+        );
+        
         setLocation(100, 50);
         
         fieldView = new FieldView(height, width);
@@ -128,7 +132,7 @@ public class SimulatorView extends JFrame
 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getObjectAt(row, col);
+                Object animal = field.getEntityAt(row, col);
                 if(animal != null) {
                     stats.incrementCount(animal.getClass());
                     fieldView.drawMark(col, row, getColor(animal.getClass()));

@@ -21,12 +21,6 @@ public abstract class Plant extends Entity
         super(location, field, weather);
     }
     
-    // methods for aquiring the constants of the subclasses.
-    protected abstract int getMAX_SEEDLINGS();
-    protected abstract int getSEEDING_AGE();
-    protected abstract int getEDIBLE_AGE();
-    protected abstract double getSEEDING_PROBABILITY();
-    
     /**
      * Makes this plant act (spread and grow).
      * @param newPlants A list to receive newly created plants.
@@ -40,12 +34,12 @@ public abstract class Plant extends Entity
     }
     
     /**
-     * Attempts to create new plants and add them to the List.
+     * Attempts to create new plants and add them to the List. New Plants
+     * grow in adjacent locations.
      * @param newPlants The list to attempt to add new plants to.
      */
     private void spread(List<Entity> newPlants)
     {
-        // New Plants grow in adjacent locations.
         // Get a list of adjacent free locations.
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
@@ -80,4 +74,10 @@ public abstract class Plant extends Entity
     {
         return (age > getEDIBLE_AGE());
     }
+    
+    // methods for aquiring the constants of the subclasses.
+    protected abstract int getMAX_SEEDLINGS();
+    protected abstract int getSEEDING_AGE();
+    protected abstract int getEDIBLE_AGE();
+    protected abstract double getSEEDING_PROBABILITY();
 }
