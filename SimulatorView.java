@@ -26,6 +26,8 @@ public class SimulatorView extends JFrame
     private final String POPULATION_PREFIX = "Population: ";
 
     private JLabel stepLabel, population, infoLabel;
+    
+    // Button for stopping the simulation.
     private JButton stopButton;
     
     private FieldView fieldView;
@@ -132,7 +134,7 @@ public class SimulatorView extends JFrame
 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getEntityAt(row, col);
+                Entity animal = field.getEntityAt(row, col);
                 if(animal != null) {
                     stats.incrementCount(animal.getClass());
                     fieldView.drawMark(col, row, getColor(animal.getClass()));

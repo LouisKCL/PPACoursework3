@@ -1,18 +1,18 @@
 import java.util.List;
-import java.util.Random;
+
 /**
- * This is the class for Grades (a type plant).
- * It currently only holds and returns constants specific to the Grade plant.
- *
- * @author Louis Mellac, Andrei Cinca
- * @version 2020.02.21
+ * A model of a grade plant.
+ * Grades age, spread, and die.
+ * 
+ * @author Louis Mellac and Andrei Cinca
+ * @version 2020.02.20
  */
 public class Grade extends Plant
 {
     //The maximum age of a grade plant.
     private static final int MAX_AGE = 35 * 24;
     // The likelihood of a grade seed successfully taking hold.
-    private static final double SEEDING_PROBABILITY = 0.03;
+    private static final double SEEDING_PROBABILITY = 0.005;
     // The maximum number of seedlings of a grade.
     private static final int MAX_SEEDLINGS = 5;
     // The age at which a grade plant can start making seeds.
@@ -24,15 +24,28 @@ public class Grade extends Plant
     
     /**
      * Creates a new grade plant and places it a field.
-     * @param field The field to place the gradde in.
+     * @param randomAge Whether or not this grade's age should be random.
+     * @param field The field to place the grade in.
      * @param locaion The location in the field to put the grade.
      * @param weather The weather affecting the grade's behaviour.
      */
-    public Grade(Field field, Location location, Weather weather)
+    public Grade(boolean randomAge, Field field, Location location, Weather weather)
     {
-        super(field,location,weather);
+        super(randomAge, field, location, weather);
     }
     
+    /**
+     * Create a Grade but return it as a Plant object.
+     * @param randomAge If true, the grade will have random age.
+     * @param field The field currently occupied.
+     * @param loc The location within the field.
+     * @param weather The weather affecting this grade's behaviour.
+     */
+    protected Plant buildSeed(boolean randomAge, Field field, Location loc, Weather weather)
+    {
+        return new Grade(randomAge, field, loc, weather);
+    }
+
     //Methods used to return constants to superclasses
     /**
      * @return the maximum age a grade plant can have.

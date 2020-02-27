@@ -6,10 +6,10 @@ import java.util.Random;
 
 /**
  * Represent a rectangular grid of field positions.
- * Each position is able to store a single animal.
+ * Each position is able to store a single entity.
  * 
- * @author David J. Barnes and Michael Kölling
- * @version 2016.02.29
+ * @author Louis Mellac, Andrei Cinca, David J. Barnes, and Michael Kölling
+ * @version 2020.02.21
  */
 public class Field
 {
@@ -55,10 +55,10 @@ public class Field
     }
     
     /**
-     * Place an animal at the given location.
-     * If there is already an animal at the location it will
+     * Place an entity at the given location.
+     * If there is already an entity at the location it will
      * be lost.
-     * @param animal The animal to be placed.
+     * @param entity The entity to be placed.
      * @param row Row coordinate of the location.
      * @param col Column coordinate of the location.
      */
@@ -68,11 +68,11 @@ public class Field
     }
     
     /**
-     * Place an animal at the given location.
-     * If there is already an animal at the location it will
+     * Place an entity at the given location.
+     * If there is already an entity at the location it will
      * be lost.
-     * @param animal The animal to be placed.
-     * @param location Where to place the animal.
+     * @param entity The entity to be placed.
+     * @param location Where to place the entity.
      */
     public void place(Entity entity, Location location)
     {
@@ -80,9 +80,9 @@ public class Field
     }
     
     /**
-     * Return the animal at the given location, if any.
+     * Return the entity at the given location, if any.
      * @param location Where in the field.
-     * @return The animal at the given location, or null if there is none.
+     * @return The entity at the given location, or null if there is none.
      */
     public Entity getEntityAt(Location location)
     {
@@ -90,10 +90,10 @@ public class Field
     }
     
     /**
-     * Return the animal at the given location, if any.
+     * Return the entity at the given location, if any.
      * @param row The desired row.
      * @param col The desired column.
-     * @return The animal at the given location, or null if there is none.
+     * @return The entity at the given location, or null if there is none.
      */
     public Entity getEntityAt(int row, int col)
     {

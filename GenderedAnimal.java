@@ -14,29 +14,23 @@ public abstract class GenderedAnimal extends Animal
     
     /**
      * Create a new gendered animal at a location in a field.
+     * @param randomAge Whether or not this animal's age should be random.
      * @param location The location within the field.
      * @param field The field currently occupied.
      * @param isFemale Whether or not this animal is female.
      * @param weather The weather affecting the animal.
      */
-    public GenderedAnimal(Location location, Field field, boolean isFemale, Weather weather) 
+    public GenderedAnimal(boolean randomAge, Location location, Field field, boolean isFemale, Weather weather) 
     {
-        super(location, field, weather);
+        super(randomAge, location, field, weather);
         this.isFemale = isFemale;
     }
-
-    protected Entity buildOffspring(boolean randomAge, Field field, Location loc, Weather weather)
-    {
-        return buildGenderedOffspring(randomAge, field, loc, rand.nextBoolean(), weather);
-    }
-    
-    abstract protected Entity buildGenderedOffspring(boolean randomAge, Field field, Location loc, boolean gender, Weather weather);
     
     /**
      * Checks all adjacent locations to see if there is another animal of the same
      * species and of the oposite gender.
      * @param currentAnimal The animal to check compatibility with.
-     * @return true if the current animal can breed with.
+     * @return true if the two animals are valid partners.
      */
     protected boolean canBreed(Animal currentAnimal)
     {

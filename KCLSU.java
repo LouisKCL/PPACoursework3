@@ -1,21 +1,20 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
- * A simple model of a KCLSU.
- * KCLSU age, move, eat admin, and die,and they can get a disease
+ * A simple model of a KCLSU student.
+ * KCLSU students age, move, eat admin, catch S.A.D., reproduce, and die.
  * 
- * @author David J. Barnes and Michael Kölling,Lousi Mellac,Andrei Cinca
- * @version 2016.02.29 (2)
+ * @author Louis Mellac, Andrei Cinca, David J. Barnes, and Michael Kölling.
+ * @version 2020.02.20
  */
 public class KCLSU extends Animal
 {
-    // Characteristics shared by all KCLSUes (class variables).
+    // Characteristics shared by all KCLSU (class variables).
     
     // The age to which a KCLSU can live 
     private static final int MAX_AGE = 50 * 24;
     // The likelihood of a KCLSU breeding.
-    private static final double BREEDING_PROBABILITY = 0.007;
+    private static final double BREEDING_PROBABILITY = 0.009;
     // The maximum number of births.
     private static final int MAX_OFFSPRING = 3;
     // Default starting food.
@@ -26,28 +25,19 @@ public class KCLSU extends Animal
     /**
      * Create a KCLSU. A KCLSU can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
-     * 
      * @param randomAge If true, the KCLSU will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
+     * @param weather The weather affecting this KCLSU's behaviour.
      */
     public KCLSU(boolean randomAge, Field field, Location location, Weather weather)
     {
-        super(location, field, weather);
-        if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(MAX_FOOD_LEVEL);
-        }
-        else {
-            age = 0;
-            foodLevel = DEFAULT_FOOD_LEVEL;
-        }
+        super(randomAge, location, field, weather);
     }
     
     /**
-     * The KCLSU eats,moves,breeds,can die of old age or hunger,or from a disease
-     * @param field The field currently occupied.
-     * @param newKCLSUes A list to return newly born KCLSUes.
+     * Make the KCLSU act. KCLSUs age, get hungrier, can catch disease, give birth, and move.
+     * @param newKCLSU A list to return newly born KCLSU.
      */
     public void act(List<Entity> newKCLSU)
     {
@@ -65,23 +55,29 @@ public class KCLSU extends Animal
     }
     
     /**
-     * Creates a new lecturer but returns it in an Entity variable.
-     * @param randomAge If true, the lecturer will have a random age.
+     * Create a KCLSU but return it as an Animal object.
+     * @param randomAge If true, the KCLSU will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
-     * @param gender Whether or not this is a female.
-     * @param weather The weather affecting this lecturer's behaviour.
+     * @param weather The weather affecting this KCLSU's behaviour.
      */
-    protected Entity buildOffspring(boolean randomAge, Field field, Location loc, Weather weather)
+    protected Animal makeOffspring(boolean randomAge, Field field, Location loc, Weather weather)
     {
         return new KCLSU(randomAge, field, loc, weather);
     }
-
+    
+    /**
+     * Checks if this KCLSU can breed with the given animal.
+     * @return true if the given animal is KCLSU
+     */
     protected boolean canBreed(Animal animal)
     {
-        return true;
+        return (animal instanceof KCLSU);
     }
     
+    /**
+     * @return an array of the types of entities KCLSU can eat (currently only admin).
+     */
     public Class<?>[] getFoodSources()
     {
         Class<?>[] foodSource = {Admin.class};
@@ -100,7 +96,7 @@ public class KCLSU extends Animal
     /**
      * @return the maximum number of offspring a KCLSU can have.
      */
-    protected int getMAX_OFFSPRING() {return MAX_AGE;}
+    protected int getMAX_OFFSPRING() {return MAX_OFFSPRING;}
     /**
      * @return the amount of food an animal would get from eating a KCLSU.
      */

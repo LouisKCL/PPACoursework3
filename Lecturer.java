@@ -1,11 +1,11 @@
 import java.util.List;
 
 /**
- * This is class lecturer
- * they eat,breed,die of old age or hunger
+ * A simple model of a Lecturer.
+ * Lecturers age, move, eat grades, catch S.A.D., reproduce, and die.
  * 
- * @author David J. Barnes and Michael Kölling
- * @version 2016.02.29 (2)
+ * @author Louis Mellac, Andrei Cinca, David J. Barnes, and Michael Kölling.
+ * @version 2020.02.20
  */
 public class Lecturer extends GenderedAnimal
 {
@@ -14,7 +14,7 @@ public class Lecturer extends GenderedAnimal
     // The age to which a Lecturer can live.
     private static final int MAX_AGE = 60 * 24;
     // The likelihood of a fox breeding.
-    private static final double BREEDING_PROBABILITY = 0.02;
+    private static final double BREEDING_PROBABILITY = 0.04;
     // The maximum number of births.
     private static final int MAX_OFFSPRING = 2;
     // Default starting food.
@@ -23,32 +23,22 @@ public class Lecturer extends GenderedAnimal
     private static final int FOOD_VALUE = 40;
 
     /**
-     * Create a lecturer. A lecturer can be created as a new born (age zero
+     * Create a Lecturer. A lecturer can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
-     * 
      * @param randomAge If true, the lecturer will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
+     * @param isFemale Whether or not the lecturer is female.
+     * @param weather The weather affecting this lecturer's behaviour.
      */
     public Lecturer(boolean randomAge, Field field, Location location, boolean isFemale, Weather weather)
     {
-        super(location, field, isFemale, weather);
-        if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(MAX_FOOD_LEVEL);
-        }
-        else {
-            age = 0;
-            foodLevel = DEFAULT_FOOD_LEVEL;
-        }
+        super(randomAge, location, field, isFemale, weather);
     }
     
     /**
-     * This is what the lecturer does most of the time: it hunts for
-     * students. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param field The field currently occupied.
-     * @param newLecturers A list to return newly born students.
+     * Make the Lecturer act. Lecturers age, get hungrier, give birth if it is night, and move (twice if it is cold).
+     * @param newLecturers A list to return newly born lecturers.
      */
     public void act(List<Entity> newLecturer)
     {
@@ -65,18 +55,21 @@ public class Lecturer extends GenderedAnimal
     }
     
     /**
-     * Creates a new lecturer but returns it in an Entity variable.
-     * @param randomAge If true, the lecturer will have a random age.
+     * Create a Lecturer but return it as an Animal object.
+     * @param randomAge If true, the lecturer will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
-     * @param gender Whether or not this is a female.
+     * @param isFemale Whether or not the lecturer is female.
      * @param weather The weather affecting this lecturer's behaviour.
      */
-    protected Entity buildGenderedOffspring(boolean randomAge, Field field, Location loc, boolean gender, Weather weather)
+    protected Animal makeOffspring(boolean randomAge, Field field, Location loc, Weather weather)
     {
-        return new Lecturer(randomAge, field, loc, gender, weather);
+        return new Lecturer(randomAge, field, loc, rand.nextBoolean(), weather);
     }
     
+    /**
+     * @return an array of the types of entities lecturers can eat (currently only grades).
+     */
     public Class<?>[] getFoodSources()
     {
         Class<?>[] foodSource = {TA.class, Student.class};
@@ -95,7 +88,7 @@ public class Lecturer extends GenderedAnimal
     /**
      * @return the maximum number of offspring a lecturer can have.
      */
-    protected int getMAX_OFFSPRING() {return MAX_AGE;}
+    protected int getMAX_OFFSPRING() {return MAX_OFFSPRING;}
     /**
      * @return the amount of food an animal would get from eating a lecturer.
      */

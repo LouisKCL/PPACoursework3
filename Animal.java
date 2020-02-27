@@ -3,7 +3,8 @@ import java.util.Iterator;
 
 /**
  * A class representing the shared characteristics of all animals in the
- * simulation.
+ * simulation. Animals move, hunt, mate to give birth to other animals of their type,
+ * and can catch the Seasonal Affective Dissorder disease.
  * 
  * @author Louis Mellac, Andrei Cinca, David J. Barnes, and Michael Kölling
  * @version 2020.02.18
@@ -13,7 +14,7 @@ public abstract class Animal extends Entity
     // Maximum amount of food an animal can have.
     protected static final int MAX_FOOD_LEVEL = 100;
     // Constants relating to the S.A.D. disease (Seasonal Affective Dissorder).
-    protected static final double PROBABILITY_OF_SAD = 0.005;
+    protected static final double PROBABILITY_OF_SAD = 0.003;
     protected static final double PROBABILITY_OF_SPREADING_SAD = 0.10;
     protected static final double PROBABILITY_OF_SURVIVING_SAD = 0.08;
     protected static final double LETHALITY_OF_SAD = 0.05;
@@ -24,23 +25,28 @@ public abstract class Animal extends Entity
     
     /**
      * Creates a new animal and places it in a field.
+     * @param randomAge Whether or not this animal's age should be random.
      * @param location The location within the field.
      * @param field The field currently occupied.
      * @param weather The weather affecting the animal.
      */
-    public Animal(Location location, Field field, Weather weather) 
+    public Animal(boolean randomAge, Location location, Field field, Weather weather) 
     {
-        super(location, field, weather);
+        super(randomAge, location, field, weather);
+        // If the age is random, then so is the food level.
+        if(randomAge)
+            foodLevel = rand.nextInt(getFOOD_VALUE());
+        else
+            foodLevel = getDEFAULT_FOOD_LEVEL();
     }
     
-    abstract protected Entity buildOffspring(boolean randomAge, Field field, Location loc, Weather weather);
 
     /**
      * Check whether or not this student is to give birth at this step.
      * New births will be made into free adjacent locations.
      * @param newStudents A list to return newly born students.
      */
-    protected void giveBirth(List<Entity> newEntities)
+    protected void giveBirth(List<Entity> newAnimals)
     {
         // New rabbits are born into adjacent locations.
         // Get a list of adjacent free locations.
@@ -49,13 +55,23 @@ public abstract class Animal extends Entity
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Entity newEntity = buildOffspring(false, field, loc, weather);
-            newEntities.add(newEntity);
+            Animal newAnimal = makeOffspring(false, field, loc, weather);
+            newAnimals.add(newAnimal);
         }
     }
+    
+    /**
+     * Returns an initialised object as an Animal variable to use in the giveBirth method.
+     * @param randomAge Whether or not this animal's age should be random.
+     * @param location The location within the field.
+     * @param field The field currently occupied.
+     * @param weather The weather affecting the animal.
+     */
+    abstract protected Animal makeOffspring(boolean randomAge, Field field, Location loc, Weather weather);
+
 
     /**
-     * enables the animal classes to move,eat,infect and breed
+     * Moves the animal to an adjacent location.
      */
     protected void move()
     {
@@ -75,20 +91,22 @@ public abstract class Animal extends Entity
     }
     
     /**
-     * Look for grades adjacent to the current location.
-     * Only the first live grade is eaten.
-     * @return Where food was found, or null if it wasn't.
+     * Looks through adjacent tiles for an entity the animal can eat.
+     * @return The location of the first entity it finds. Null if none was found.
      */
     protected Location findFood()
     {
+        // Get a list of adjacent locations with entities in them.
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
             Entity food = field.getEntityAt(where);
+            // See if the entity is an instance of a class type this animal can eat.
             for (Class<?> foodSource : getFoodSources()) {
                 if(foodSource.isInstance(food) && food.isEdible()) {
+                    // If it is, kill the entity and return its location.
                     if(food.isAlive()) { 
                         food.setDead();
                         if (foodLevel < MAX_FOOD_LEVEL)
@@ -101,7 +119,10 @@ public abstract class Animal extends Entity
         return null;
     }
     
-    abstract public Class<?>[] getFoodSources();
+    /**
+     * @return An array of the different types of entity this animal can eat.
+     */
+    abstract protected Class<?>[] getFoodSources();
 
     /**
      * Make this animal more hungry. This could result in the animal's death.
@@ -114,7 +135,7 @@ public abstract class Animal extends Entity
     }
     
     /**
-     * @return true if the animal is edible (in this case, all animals are always edible)
+     * @return true if the animal is edible (currently, all animals are always edible)
      */
     public boolean isEdible()
     {
@@ -122,8 +143,7 @@ public abstract class Animal extends Entity
     }
     
     /**
-     * Generate a number representing the number of births,
-     * if it can breed.
+     * Generate a number representing the number of births, if the animal can breed.
      * @return The number of births (may be zero).
      */
     protected int breed()
@@ -134,10 +154,16 @@ public abstract class Animal extends Entity
         return births;
     }
     
+    /**
+     * Checks if an animal can breed with another.
+     * @param animal The animal to check breeding compatibility with.
+     * @return true if the animal is able to create offspring.
+     */
     abstract protected boolean canBreed(Animal animal);
 
     /**
-     * this method determines whether or not the current animal will catch the disease
+     * This method determines whether or not the current animal will develop the disease
+     * by itself.
      */
     protected void developSAD()
     {
@@ -146,8 +172,8 @@ public abstract class Animal extends Entity
     }
     
     /**
-     * This method enables the infected animals to spread the disease to other animals(of the same class) around them.
-     * There is a probability for the spreading as well
+     * This method enables the infected animals to spread the disease to other animals (of the same class) around them.
+     * @param currentAnimal the animal with the disease attempting to spread it.
      */
     protected void spreadSAD(Animal currentAnimal)
     {
@@ -167,14 +193,6 @@ public abstract class Animal extends Entity
     }
     
     /**
-     * this method changes the value of the infected state to true
-     */
-    protected void infect()
-    {
-        hasSAD = true;
-    }
-    
-    /**
      * This method checks whether or not the infected animal dies of SAD.
      * If they don't die, there is a chance they can be cured.
      */
@@ -188,8 +206,25 @@ public abstract class Animal extends Entity
         }
     }
     
+    /**
+     * Infects an animal with the disease.
+     */
+    protected void infect()
+    {
+        hasSAD = true;
+    }
+    
     // Methods for getting the constants of the subclasses (and ensuring they have those constants).
+    /**
+     * @return the probability that an animal can breed.
+     */
     protected abstract double getBREEDING_PROBABILITY();
+    /**
+     * @return the maximum number of offspring this animal can have.
+     */
     protected abstract int getMAX_OFFSPRING();
+    /**
+     * @return the default food level this animal starts with.
+     */
     protected abstract int getDEFAULT_FOOD_LEVEL();
 }

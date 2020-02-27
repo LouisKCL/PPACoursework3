@@ -1,13 +1,11 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
- * This is class student
- * they eat grades(plant),die,breed,move,age
- * they re being eaten by lecturers
+ * A simple model of a student.
+ * Students age, move, eat grades, catch S.A.D., reproduce, and die.
  * 
- * @author David J. Barnes, Michael Kölling, Louis Mellac, Andrei Cinca
- * @version 2020.02.11
+ * @author Louis Mellac, Andrei Cinca, David J. Barnes, and Michael Kölling.
+ * @version 2020.02.20
  */
 public class Student extends GenderedAnimal
 {
@@ -16,40 +14,31 @@ public class Student extends GenderedAnimal
     // Maximum age of a student .
     private static final int MAX_AGE = 40 * 24;
     // The likelihood of a student breeding.
-    private static final double BREEDING_PROBABILITY = 0.04;
-    // The maximum number of births.
+    private static final double BREEDING_PROBABILITY = 0.03;
+    // The maximum number of offspring a student can have.
     private static final int MAX_OFFSPRING = 5;
-    // Food value of a student
+    // The food value of a student.
     private static final int FOOD_VALUE = 20;
-    // Default starting food level of a student.
-    private static final int DEFAULT_FOOD_LEVEL = 30;
+    // The default starting food level of a student.
+    private static final int DEFAULT_FOOD_LEVEL = 40;
 
     /**
-     * Create a new student. A student may be created with age
-     * zero (a new born) or with a random age.
-     * 
-     * @param randomAge If true, the student will have a random age.
+     * Create a Student. A student can be created as a new born (age zero
+     * and not hungry) or with a random age and food level.
+     * @param randomAge If true, the student will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
+     * @param isFemale Whether or not the student is female.
+     * @param weather The weather affecting this student's behaviour.
      */
     public Student(boolean randomAge, Field field, Location location, boolean isFemale, Weather weather)
     {
-        super(location, field, isFemale, weather);
-        age = 0;
-        if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(MAX_FOOD_LEVEL);
-        }
-        else {
-            age = 0;
-            foodLevel = DEFAULT_FOOD_LEVEL;
-        }
+        super(randomAge,location, field, isFemale, weather);
     }
     
     /**
-     * This is how the student acts.They can eat if they find food around them
-     * they can breed,die,get a disease,age
-     * @param newRabbits A list to return newly born students.
+     * Make the Student act. Students age, get hungrier, give birth if it is daytime and not hot, and move.
+     * @param newStudents A list to return newly born students.
      */
     public void act(List<Entity> newStudents)
     {
@@ -63,24 +52,27 @@ public class Student extends GenderedAnimal
                if (!weather.isNight() && !weather.isHot()) {
                     giveBirth(newStudents);
                }
-               move();  
+               move(); 
             }  
         }
     }
     
     /**
-     * Creates a new student but returns it in an Entity variable.
-     * @param randomAge If true, the student will have a random age.
+     * Create a Student but return it as an Animal object.
+     * @param randomAge If true, the student will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
-     * @param gender Whether or not this is a female.
+     * @param isFemale Whether or not the student is female.
      * @param weather The weather affecting this student's behaviour.
      */
-    protected Entity buildGenderedOffspring(boolean randomAge, Field field, Location loc, boolean gender, Weather weather)
+    protected Animal makeOffspring(boolean randomAge, Field field, Location loc, Weather weather)
     {
-        return new Student(randomAge, field, loc, gender, weather);
+        return new Student(randomAge, field, loc, rand.nextBoolean(), weather);
     }
     
+    /**
+     * @return an array of the types of entities students can eat (currently only grades).
+     */
     public Class<?>[] getFoodSources()
     {
         Class<?>[] foodSource = {Grade.class};
@@ -99,7 +91,7 @@ public class Student extends GenderedAnimal
     /**
      * @return the maximum number of offspring a student can have.
      */
-    protected int getMAX_OFFSPRING() {return MAX_AGE;}
+    protected int getMAX_OFFSPRING() {return MAX_OFFSPRING;}
     /**
      * @return the amount of food an animal would get from eating a student.
      */

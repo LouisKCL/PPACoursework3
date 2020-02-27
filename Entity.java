@@ -2,8 +2,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * A class representing the shared characteristics of all entities (plants and animals)
- * in the simulation.
+ * A class representing the shared characteristics and methods of all entities (plants and animals)
+ * in the simulation. Entities get older and die, and can be affected by weather.
  * 
  * @author Louis Mellac, Andrei Cinca, David J. Barnes, and Michael Kölling
  * @version 2020.02.18
@@ -25,57 +25,20 @@ public abstract class Entity
     
     /**
      * Create a new entity and place it in the field.
-     * 
+     * @param randomAge Whether or not this entity should start with a random age.
      * @param location The location within the field.
      * @param field The field currently occupied.
      * @param weather The weather affecting the entity.
      */
-    public Entity(Location location, Field field, Weather weather) 
+    public Entity(boolean randomAge, Location location, Field field, Weather weather) 
     {
         this.field = field;
         this.weather = weather;
         setLocation(location);
-    }
-    
-    /**
-     * Makes this entity act.
-     * @param newEntities A list to receive newly made entities.
-     */
-    abstract public void act(List<Entity> newEntities);
-    
-    /**
-     * @return true if the entity is still alive.
-     */
-    protected boolean isAlive()
-    {
-        return alive;
-    }
-    
-    /**
-     * @return true if the entity can be eaten.
-     */
-    abstract public boolean isEdible();
-
-    /**
-     * Indicates that the entity is no longer alive.
-     * It is removed from the field.
-     */
-    protected void setDead()
-    {
-        alive = false;
-        if(location != null) {
-            field.clear(location);
-            location = null;
-            field = null;
-        }
-    }
-
-    /**
-     * @return The entity's location.
-     */
-    protected Location getLocation()
-    {
-        return location;
+        if(randomAge)
+            age = rand.nextInt(getMAX_AGE());
+        else
+            age = 0;
     }
     
     /**
@@ -92,12 +55,10 @@ public abstract class Entity
     }
     
     /**
-     * @return The entity's field.
+     * Makes this entity act.
+     * @param newEntities A list to receive newly made entities.
      */
-    protected Field getField()
-    {
-        return field;
-    }
+    abstract public void act(List<Entity> newEntities);
     
     /**
      * Increase the entity's age. This could result in its death.
@@ -110,7 +71,57 @@ public abstract class Entity
         }
     }
     
-    // Methods for getting the constants of the subclasses.
+    /**
+     * Indicates that the entity is no longer alive.
+     * It is removed from the field.
+     */
+    protected void setDead()
+    {
+        // System.out.println("Killed: "+super.toString()); 
+        alive = false;
+        if(location != null) {
+            field.clear(location);
+            location = null;
+            field = null;
+        }
+    }
+    
+    /**
+     * @return true if the entity is still alive.
+     */
+    protected boolean isAlive()
+    {
+        return alive;
+    }
+    
+    /**
+     * @return true if the entity can be eaten.
+     */
+    abstract public boolean isEdible();
+
+    /**
+     * @return The entity's location.
+     */
+    protected Location getLocation()
+    {
+        return location;
+    }
+    
+    /**
+     * @return The entity's field.
+     */
+    protected Field getField()
+    {
+        return field;
+    }
+     
+    // Methods for ensuring access to the MAX_AGE and FOOD_VALUE constants of the subclasses.
+    /**
+     * @return The entity's maximum age.
+     */
     abstract protected int getMAX_AGE();
+    /**
+     * @return How much food the entity is worth.
+     */
     abstract protected int getFOOD_VALUE();
 }

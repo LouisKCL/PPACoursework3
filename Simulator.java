@@ -5,8 +5,9 @@ import java.util.Iterator;
 import java.awt.Color;
 
 /**
- * A simple predator-prey simulator based on a rectangular field
- * containing students, lecturers, KCLSU, admin staff, TAs, and plants (grades and documentation).
+ * A simple simulator based on a rectangular field for simulating interactions between entities.
+ * The entities in this simulation are students, lecturers, KCLSU, admin staff, TAs, 
+ * and the grades and documentation plants.
  * 
  * @author Louis Mellac, Andrei Cinca, David J. Barnes, and Michael Kölling
  * @version 2020.02.18
@@ -19,19 +20,19 @@ public class Simulator
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 80;
     // The probability that a lecturer will be created in any given grid position.
-    private static final double LECTURER_CREATION_PROBABILITY = 0.03;
+    private static final double LECTURER_CREATION_PROBABILITY = 0.015;
     // The probability that a student will be created in any given grid position.
-    private static final double STUDENT_CREATION_PROBABILITY = 0.07;
+    private static final double STUDENT_CREATION_PROBABILITY = 0.04;
     // The probability that an admin will be created in any given grid position.
-    private static final double ADMIN_CREATION_PROBABILITY = 0.04;
+    private static final double ADMIN_CREATION_PROBABILITY = 0.02;
     // The probability that a KCLSU will be created in any given grid position.
     private static final double KCLSU_CREATION_PROBABILITY = 0.009;
     // The probability that a TA will be created in any given grid position.
-    private static final double TA_CREATION_PROBABILITY = 0.08;
+    private static final double TA_CREATION_PROBABILITY = 0.1;
     // The probability that a grade will be created in any given grid position.
-    private static final double GRADE_CREATION_PROBABILITY = 0.007;
+    private static final double GRADE_CREATION_PROBABILITY = 0.15;
     // The probability that a documentation will be created in any given grid position.
-    private static final double DOCUMENTATION_CREATION_PROBABILITY = 0.009;
+    private static final double DOCUMENTATION_CREATION_PROBABILITY = 0.2;
 
     // List of entities in the field.
     private List<Entity> entities;
@@ -88,7 +89,7 @@ public class Simulator
     
     /**
      * Run the simulation from its current state for a reasonably long period,
-     * (4000 steps).
+     * (2000 steps).
      */
     public void runLongSimulation()
     {
@@ -121,6 +122,7 @@ public class Simulator
         
         // Provide space for newly made entities.
         List<Entity> newEntities = new ArrayList<>();
+        
         // Make all entities act and remove dead entities from the list.
         for(Iterator<Entity> it = entities.iterator(); it.hasNext(); ) {
             Entity entity = it.next();
@@ -128,7 +130,8 @@ public class Simulator
             if(!entity.isAlive()) {
                 it.remove();
             }
-        }     
+        }
+
         // Add the newly born entities to the main list.
         entities.addAll(newEntities);
         view.showStatus(step, field);
@@ -184,12 +187,12 @@ public class Simulator
                 }
                 else if(rand.nextDouble() <=  GRADE_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Grade  grade = new Grade(field, location, weather);
+                    Grade  grade = new Grade(true, field, location, weather);
                     entities.add(grade);
                 }
                 else if(rand.nextDouble() <=  DOCUMENTATION_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Documentation  doc = new Documentation(field, location, weather);
+                    Documentation  doc = new Documentation(true, field, location, weather);
                     entities.add(doc);
                 }
                 // else leave the location empty.

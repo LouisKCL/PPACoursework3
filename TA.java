@@ -1,19 +1,18 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
- * A model of a Teaching Assistant (TA)
- * TAs eat plants,die of hunger or old ages,move and breed
+ * A simple model of a teaching assistant (TA).
+ * TAs age, move, eat documentation, reproduce, and die.
  * 
- * @author David J. Barnes, Michael Kölling, Louis Mellac, Andrei Cinca
- * @version 2020.02.11
+ * @author Louis Mellac, Andrei Cinca, David J. Barnes, and Michael Kölling.
+ * @version 2020.02.20
  */
 public class TA extends GenderedAnimal
 {
     // Maximum age of a TA.
     private static final int MAX_AGE = 40 * 24;
     // The likelihood of a TA breeding.
-    private static final double BREEDING_PROBABILITY = 0.05;
+    private static final double BREEDING_PROBABILITY = 0.04;
     // The maximum number of births.
     private static final int MAX_OFFSPRING = 3;
     // Food value of a TA
@@ -22,55 +21,50 @@ public class TA extends GenderedAnimal
     private static final int DEFAULT_FOOD_LEVEL = 35;
 
     /**
-     * Create a new rabbit. A TA may be created with age
-     * zero (a new born) or with a random age.
-     * 
-     * @param randomAge If true, the TA will have a random age.
+     * Create a TA. A TA can be created as a new born (age zero
+     * and not hungry) or with a random age and food level.
+     * @param randomAge If true, the TA will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
+     * @param isFemale Whether or not the TA is female.
+     * @param weather The weather affecting this TA's behaviour.
      */
     public TA(boolean randomAge, Field field, Location location, boolean isFemale, Weather weather)
     {
-        super(location, field, isFemale, weather);
-        age = 0;
-        if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(MAX_FOOD_LEVEL);
-        }
-        else {
-            age = 0;
-            foodLevel = DEFAULT_FOOD_LEVEL;
-        }
+        super(randomAge, location, field, isFemale, weather);
     }
     
     /**
-     * TAs can move,breed,eat,die of old age or hunger
-     * @param newTAs A list to return newly born TA.
+     * Make the TA act. TAs age, get hungrier, give birth if it not cold, and move.
+     * @param newTAs A list to return newly born TAs.
      */
-    public void act(List<Entity> newTA)
+    public void act(List<Entity> newTAs)
     {
         incrementAge();
         incrementHunger();
         if(isAlive()) {
             if (!weather.isCold())
-                giveBirth(newTA);       
+                giveBirth(newTAs);       
             move();
         }
     }
 
     /**
-     * Creates a new TA but returns it in an Entity variable.
-     * @param randomAge If true, the TA will have a random age.
+     * Create a TA but return it as an Animal object.
+     * @param randomAge If true, the TA will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
-     * @param gender Whether or not this is a female.
+     * @param isFemale Whether or not the TA is female.
      * @param weather The weather affecting this TA's behaviour.
      */
-    protected Entity buildGenderedOffspring(boolean randomAge, Field field, Location loc, boolean gender, Weather weather)
+    protected Animal makeOffspring(boolean randomAge, Field field, Location loc, Weather weather)
     {
-        return new TA(randomAge, field, loc, gender, weather);
+        return new TA(randomAge, field, loc, rand.nextBoolean(), weather);
     }
     
+    /**
+     * @return an array of the types of entities students can eat (currently only grades).
+     */
     public Class<?>[] getFoodSources()
     {
         Class<?>[] foodSource = {Documentation.class};
@@ -89,7 +83,7 @@ public class TA extends GenderedAnimal
     /**
      * @return the maximum number of offspring a TA can have.
      */
-    protected int getMAX_OFFSPRING() {return MAX_AGE;}
+    protected int getMAX_OFFSPRING() {return MAX_OFFSPRING;}
     /**
      * @return the amount of food an animal would get from eating a TA.
      */

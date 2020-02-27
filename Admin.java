@@ -1,12 +1,11 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
- * A simple model of a admin.
- * admines age, move, eat TAs, and die.
+ * A simple model of an admin.
+ * Admins age, move, eat TAs, reproduce, and die.
  * 
- * @author David J. Barnes and Michael Kölling,Louis Mellac, Andrei Cinca
- * @version 2016.02.29 (2)
+ * @author Louis Mellac, Andrei Cinca, David J. Barnes, and Michael Kölling,
+ * @version 2020.02.20
  */
 public class Admin extends Animal
 {
@@ -15,7 +14,7 @@ public class Admin extends Animal
     // The age to which a admin can live.
     private static final int MAX_AGE = 80 * 24;
     // The likelihood of a admin breeding.
-    private static final double BREEDING_PROBABILITY = 0.04;
+    private static final double BREEDING_PROBABILITY = 0.03;
     // The maximum number of births.
     private static final int MAX_OFFSPRING = 2;
     // Default starting food.
@@ -24,65 +23,60 @@ public class Admin extends Animal
     private static final int FOOD_VALUE = 40;
 
     /**
-     * Create a admin. A admin can be created as a new born (age zero
+     * Create an admin. An admin can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
-     * 
      * @param randomAge If true, the admin will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
+     * @param weather The weather affecting this admin's behaviour.
      */
     public Admin(boolean randomAge, Field field, Location location, Weather weather)
     {
-        super(location, field, weather);
-        if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(MAX_FOOD_LEVEL);
-        }
-        else {
-            age = 0;
-            foodLevel = DEFAULT_FOOD_LEVEL;
-        }
+        super(randomAge, location, field, weather);
     }
     
     /**
-     * This is what the admin does most of the time: it hunts for
-     * rabbits. In the process, it might breed, die of hunger,
-     * or die of old age
-     * @param field The field currently occupied.
-     * @param newadmines A list to return newly born admins.
+     * Make the Admin act. Admins age, get hungrier, give birth (twice if it is hot), and move.
+     * @param newAdmin A list to return newly born admin.
      */
-    public void act(List<Entity> newAdmin)
+    public void act(List<Entity> newAdmins)
     {
         incrementAge();
         incrementHunger();
         if(isAlive()) {
             if (weather.isNight()) {
-                giveBirth(newAdmin);
+                giveBirth(newAdmins);
                 if (weather.isHot()) 
-                    giveBirth(newAdmin);
+                    giveBirth(newAdmins);
             }
             move();
         }
     }
     
-     /**
-     * Creates a new lecturer but returns it in an Entity variable.
-     * @param randomAge If true, the lecturer will have a random age.
+    /**
+     * Create an admin but return it as an Animal object.
+     * @param randomAge If true, the admin will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
-     * @param gender Whether or not this is a female.
-     * @param weather The weather affecting this lecturer's behaviour.
+     * @param weather The weather affecting this admin's behaviour.
      */
-    protected Entity buildOffspring(boolean randomAge, Field field, Location loc, Weather weather)
+    protected Animal makeOffspring(boolean randomAge, Field field, Location loc, Weather weather)
     {
         return new Admin(randomAge, field, loc, weather);
     }
 
+    /**
+     * Checks if this admin can breed with the given animal.
+     * @return true if the given animal is an admin
+     */
     protected boolean canBreed(Animal animal)
     {
-        return true;
+        return (animal instanceof Admin);
     }
     
+    /**
+     * @return an array of the types of entities admins can eat (currently lecturers and TAs).
+     */
     public Class<?>[] getFoodSources()
     {
         Class<?>[] foodSource = {Lecturer.class, TA.class};
@@ -101,7 +95,7 @@ public class Admin extends Animal
     /**
      * @return the maximum number of offspring a admin can have.
      */
-    protected int getMAX_OFFSPRING() {return MAX_AGE;}
+    protected int getMAX_OFFSPRING() {return MAX_OFFSPRING;}
     /**
      * @return the amount of food an animal would get from eating a admin.
      */
